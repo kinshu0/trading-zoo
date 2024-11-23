@@ -1,0 +1,49 @@
+Trading Zoo - A Playful Market Simulation Game
+
+Theme:
+Trading Zoo is a whimsical trading simulation game that brings the world of finance to life through anthropomorphized animal teams. Set in a jungle-themed environment, the game features various animal species as sophisticated trading teams, each with their own specialties and trading strategies.
+
+Core Concept:
+Players can observe and interact with a vibrant marketplace where animal teams trade exotic goods in real-time. The game combines educational aspects of market dynamics with playful, jungle-themed elements.
+
+Trading Teams:
+1. Penguins 🐧 - Cool-headed traders specializing in ice futures
+2. Monkeys 🐒 - Agile merchants expert in fruit trading
+3. Foxes 🦊 - Cunning market analysts and strategic traders
+4. Iguanas 🦎 - Patient long-term investors
+
+Tradable Assets:
+- Bananas 🍌 - A staple commodity
+- Ice 🧊 - Temperature-sensitive luxury good
+- Pineapples 🍍 - Exotic fruit commodity
+- Umbrellas ☂️ - Weather protection equipment
+- Scuba Gear 🤿 - Specialized equipment
+
+Game Features:
+- Real-time trading simulation
+- Dynamic price fluctuations
+- Random market events affecting prices
+- Team performance tracking
+- Visual data representation through graphs
+- Detailed trade history
+- Jungle-themed UI with playful animations
+
+Visual Theme:
+The interface uses a nature-inspired color palette with gradients of greens and earth tones, creating an immersive jungle atmosphere. The design incorporates playful emoji icons and smooth animations to maintain engagement while presenting complex market data.
+
+Educational Value:
+While maintaining a fun and accessible atmosphere, the game teaches fundamental concepts of:
+- Supply and demand
+- Market dynamics
+- Price fluctuations
+- Trading strategies
+- Risk management
+- Portfolio tracking
+
+Target Audience:
+- Beginners interested in learning about trading
+- Students learning economics
+- Anyone interested in gamified financial education
+- Casual gamers who enjoy management simulations
+
+The game strikes a balance between educational value and entertainment, using the jungle theme and animal characters to make complex market concepts more approachable and engaging.

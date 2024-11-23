@@ -1,6 +1,6 @@
 import requests
 from typing import Optional, Dict, List, Any
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 import heapq
 
@@ -11,14 +11,14 @@ class event:
     security_affected : str
     event_severity : int
 
-@dataclass
+@dataclass(order=True)
 class Order:
-    id: str # who is making the order
-    security: str # the security the order is for
-    price: float # quote price (buy or sell)
-    quantity: int # quantity of the order
-    isBuy: bool # true if buy order, false if sell order
-    timestamp: int # int of the tick the order was made
+    id: str = field(compare=False) # who is making the order
+    security: str = field(compare=False) # the security the order is for
+    price: float = field(compare=False) # quote price (buy or sell)
+    quantity: int = field(compare=False)  # quantity of the order
+    isBuy: bool = field(compare=False) # true if buy order, false if sell order
+    timestamp: int = field(compare=True) # int of the tick the order was made
 
     @classmethod
     def create_market_sell_order(cls, security: str, price: float, timestamp: int):

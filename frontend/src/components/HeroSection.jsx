@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import styles from './HeroSection.module.styl'
 import Button from './ui/Button'
 import { Sparkles } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const emojiVariants = {
   hidden: { y: 20, opacity: 0 },
@@ -22,7 +23,12 @@ const buttonVariants = {
 }
 
 export function HeroSection () {
+  const navigate = useNavigate()
   const emojis = ['🐒', '🐧', '🦊', '🦎', '👤']
+
+  const handleStartGame = () => {
+    navigate('/game')
+  }
 
   return (
     <motion.section
@@ -52,7 +58,11 @@ export function HeroSection () {
 
         <div className="flex justify-center">
           <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-            <Button size="lg" className="bg-green-500 hover:bg-green-600">
+            <Button 
+              size="lg" 
+              className="bg-green-500 hover:bg-green-600"
+              onClick={handleStartGame}
+            >
               Join the Jungle
             </Button>
           </motion.div>

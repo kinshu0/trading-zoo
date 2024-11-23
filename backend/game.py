@@ -1,6 +1,7 @@
 from flask import Flask, Response 
 from client import trading_client, MarketInfo
 from model import event, GameOrderBook
+from dataclasses import dataclass
 
 app = Flask(__name__)
 
@@ -10,6 +11,11 @@ event_timeline = []
 news_feed = []
 securities = []
 
+@dataclass
+class security_description:
+    name : str
+    story : str
+    price : int
 
 clients = dict()
 
@@ -51,16 +57,21 @@ def start():
 
     event_timeline = create_event_timeline()
 
-    securities = ["ice", "fish"]
+    securities = [
+        security_description(name = "ice",
+         story = "The sun's rays grow stronger each day, and whispers spread through the market of a great heat wave approaching. The cloud shepherds have been seen guiding their flocks far to the north, leaving the southern markets exposed to the sun's fierce embrace.",
+         price = 1
+         ),
 
-    securities_stories = {
-            "ice" : "The sun's rays grow stronger each day, and whispers spread through the market of a great heat wave approaching. The cloud shepherds have been seen guiding their flocks far to the north, leaving the southern markets exposed to the sun's fierce embrace.",
 
-            "fish" : "A mysterious current has shifted in the deep waters, bringing schools of silver-scaled visitors to unusual waters. The wise seals speak of a great migration that happens once every blue moon, but the local fishing fleets seem oddly quiet about their recent catches."
+        security_description(name = "fish",
+         story = "A mysterious current has shifted in the deep waters, bringing schools of silver-scaled visitors to unusual waters. The wise seals speak of a great migration that happens once every blue moon, but the local fishing fleets seem oddly quiet about their recent catches.",
+         price = 1
+         )
 
-            }
+    ]
 
-    quotes = GameOrderBook(securities = securities)
+    quotes = GameOrderBook(securities = [security.name for security in securities])
 
     game_started = True
 
@@ -76,7 +87,7 @@ def tick():
     for security in securities:
         #             orderbook="Bid: 30(300), 29(500)\nAsk: 31(200), 32(400)"
 
-        current_market_info[security] = MarketInfo(story = securities_stories[security],
+        current_market_info[security.name] = MarketInfo(story = security.story,
                                                    orderbook = ""
                                                    )
 
@@ -93,7 +104,7 @@ def tick():
     resolved = quotes.fullfillOrders(tick = current_tick)
 
     for resolved_security in resolved:
-        for record in resolved[security]:
+        for record in resolved[resolved_security]:
             for client in clients:
                 if client.name == record.seller:
                     client.balance_available += record.quantity * record.price

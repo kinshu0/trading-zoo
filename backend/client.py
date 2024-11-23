@@ -1,10 +1,17 @@
 import os
 from dotenv import load_dotenv
 load_dotenv()
+from dataclasses import dataclass
+from typing import List
 
 from autogen import ConversableAgent
 
 from model import Order
+
+@dataclass
+class security_description:
+    security_name : str
+    quantity : int
 
 config_list = [
     {
@@ -62,10 +69,12 @@ trader = ConversableAgent(
 )
 
 class TradingClient:
-    def __init__(self, name: str):
+    def __init__(self, name: str, starting_balance : int):
         self.name = name
         self.analyst = analyst
         self.trader = trader
+        self.portfolio : List[security_description] = [] 
+        self.balance_available = starting_balance
         
     def get_quote(self, market_info: dict[str, MarketInfo]) -> Order:
         """
@@ -112,6 +121,3 @@ class TradingClient:
             isBuy=(action.lower() == "buy"),
             timestamp=int(time.time())
         )
-
-    def get_name(self):
-        return self.name

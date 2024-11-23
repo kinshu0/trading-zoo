@@ -25,7 +25,7 @@ def register_client(name):
     global game_started, clients
 
     if not game_started:
-        clients[name] = trading_client(name)
+        clients[name] = trading_client(name = name, starting_balance = 100)
 
         return name
     else:
@@ -68,9 +68,22 @@ def tick():
     for client in clients:
         quotes.addOrder(clients[client].get_quote())
 
-    resolved = fullfillOrders(tick = current_tick)
+    resolved = quotes.fullfillOrders(tick = current_tick)
 
-    # process resolved
+    for resolved_security in resolved:
+        for record in resolved[security]:
+            for client in clients:
+                if client.name == record.seller:
+                    client.balance_available += record.quantity * record.price
+                    for held_security in client.portfolio:
+                        if held_security.security_name == resolved_security:
+                            held_security.quantity -= record.quantity
+
+                elif client.name == record.buyer:
+                    client.balance_available -= record.quantity * record.price
+                    for held_security in client.portfolio:
+                        if held_security.security_name == resolved_security:
+                            held_security.quantity += record.quantity
 
     current_tick += 1
 

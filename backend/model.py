@@ -96,7 +96,6 @@ class OrderBook:
         '''
         add an order to the order book from the agent
         '''
-        print(order.price, order, self.buyHeap, self.sellHeap)
         if order.isBuy:
             heapq.heappush(self.buyHeap, (-order.price, order))
         else:
@@ -116,6 +115,7 @@ class OrderBook:
             # create record of the transaction
             currRecord = tradeRecord(seller=self.sellHeap[0][1].id,
                                      buyer=self.buyHeap[0][1].id,
+                                     security=self.sellHeap[0][1].security,
                                      price=self.sellHeap[0][0],
                                      quantity=subtractAmt,
                                      timestamp=tick)

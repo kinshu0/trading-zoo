@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 load_dotenv()
+from dataclasses import dataclass
+from typing import List
 
 from autogen import ConversableAgent
 from dataclasses import dataclass
@@ -8,6 +10,11 @@ from typing import Dict, List
 import time
 import uuid
 from model import Order
+
+@dataclass
+class security_description:
+    security_name : str
+    quantity : int
 
 config_list = [
     {
@@ -65,16 +72,19 @@ trader = ConversableAgent(
 )
 
 class TradingClient:
-    def __init__(self, team_name: str):
+    def __init__(self, team_name: str, starting_balance : int):
         """
         Initialize a trading client for an animal team
         
         Args:
             team_name: Name of the animal team (e.g., 'penguins', 'monkeys', etc.)
+            starting_balance: Starting balance of team
         """
         self.team_name = team_name
         self.analyst = analyst
         self.trader = trader
+        self.portfolio : List[security_description] = [] 
+        self.balance_available = starting_balance
         
     def get_quote(self, market_info: dict[str, MarketInfo]) -> List[Order]:
         """

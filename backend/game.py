@@ -1,5 +1,5 @@
 from flask import Flask, Response 
-from client import TradingClient, MarketInfo
+from client import TradingClient, MarketInfo, security_description as security_created_desc
 from model import event, GameOrderBook
 from dataclasses import dataclass
 from security import security as security_seq
@@ -84,6 +84,17 @@ def start():
 
     return "Game started!"
 
+@app.route("/valuation/<name>")
+def get_valuation(name):
+    global clients
+
+    if not clients:
+        return ("Not found", 404)
+    
+    for client in clients:
+        if client.team_name == name:
+            return f"{client.get_portfolio_valuation()}"
+
 @app.route("/tick")
 def tick():
     global game_started, current_tick, clients, event_timeline, news_feed, securities_descriptions, quotes, securities_sequences
@@ -100,7 +111,7 @@ def tick():
 
     quotes.update_market_maker_orders(security_prices = security_name_and_price, timestamp=current_tick)
 
-    print('-' * 100)
+    print('-' * 200, 'START')
 
     for security in securities_descriptions:
 
@@ -110,15 +121,21 @@ def tick():
         print(security.name, quotes.orderBooks[security.name].__str__())
 
     for cc in clients:
-        print(cc.team_name, cc.portfolio)
+        print(cc.team_name, cc.portfolio, cc.balance_available)
 
-    print('-' * 100)
+    print('-' * 200)
+
 
     for client in clients:
         order = client.get_quote(market_info = current_market_info, current_tick=current_tick)
         quotes.addOrder(order)
 
     resolved = quotes.fullfillOrders(tick = current_tick)
+    for security in securities_descriptions:
+        print(security.name, quotes.orderBooks[security.name].__str__())
+    print(resolved)
+
+    print('-' * 200, 'END')
 
     for resolved_security in resolved:
         for record in resolved[resolved_security]:
@@ -131,9 +148,15 @@ def tick():
 
                 elif client.team_name == record.buyer:
                     client.balance_available -= record.quantity * record.price
+                    resolved_b = False
                     for held_security in client.portfolio:
                         if held_security.security_name == resolved_security:
                             held_security.quantity += record.quantity
+                            resolved_b = True
+
+                    if not resolved_b:
+                        client.portfolio.append(security_created_desc(security_name=resolved_security, quantity=record.quantity, price=record.price))
+                            
 
     current_tick += 1
 

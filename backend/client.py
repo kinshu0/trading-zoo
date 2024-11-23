@@ -15,6 +15,7 @@ from model import Order
 class security_description:
     security_name : str
     quantity : int
+    price : int
 
 config_list = [
     {
@@ -85,6 +86,9 @@ class TradingClient:
         self.trader = trader
         self.portfolio : List[security_description] = [] 
         self.balance_available = starting_balance
+    
+    def get_portfolio_valuation(self):
+        return sum([sec.price * sec.quantity for sec in self.portfolio]) + self.balance_available
         
     def get_quote(self, market_info: dict[str, MarketInfo], current_tick : int) -> List[Order]:
         """
@@ -124,7 +128,8 @@ class TradingClient:
                 action, price, quantity = details.split("|")
                 
                 orders.append(Order(
-                    id=f"{self.team_name}-{uuid.uuid4()}",
+                    #id=f"{self.team_name}-{uuid.uuid4()}",
+                    id=f"{self.team_name}",
                     security=item,
                     price=float(price),
                     quantity=int(quantity),

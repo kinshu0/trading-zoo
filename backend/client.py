@@ -18,12 +18,12 @@ class security_description:
 
 config_list = [
     {
-        "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        "model": "meta-llama/Meta-Llama-3.1-70B-Instruct",
         "api_key": os.environ.get("NEBIUS_API_KEY"),
         'base_url':"https://api.studio.nebius.ai/v1/"
     },
     {
-        "model": "meta-llama/Meta-Llama-3.1-70B-Instruct",
+        "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
         "api_key": os.environ.get("NEBIUS_API_KEY"),
         'base_url':"https://api.studio.nebius.ai/v1/"
     }
@@ -101,7 +101,7 @@ class TradingClient:
         for item, info in market_info.items():
             analysis_request += f"\nItem: {item}\n"
             analysis_request += f"Story Riddle: {info.story}\n"
-            analysis_request += f"Orderbook: {info.orderbook}\n"
+            analysis_request += f"Current State of Orderbook\n: {info.orderbook}\n"
         
         # First get analysis from analyst agent
         analysis_result = self.analyst.initiate_chat(

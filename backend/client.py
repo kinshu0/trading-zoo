@@ -115,3 +115,25 @@ class TradingClient:
 
     def get_name(self):
         return self.name
+    
+
+def test():
+
+    tc = TradingClient('mammoth')
+
+    market_info = {
+        "BTC": MarketInfo(
+            news="Bitcoin adoption increasing among institutional investors. Major bank announces crypto custody service.",
+            orderbook="Bid: 50000(5), 49800(10)\nAsk: 50200(3), 50400(8)"
+        ),
+        "ETH": MarketInfo(
+            news="Ethereum network congestion leading to high gas fees. New Layer 2 solution announced.",
+            orderbook="Bid: 2800(15), 2780(25)\nAsk: 2820(10), 2840(20)"
+        )
+    }
+
+    order = tc.get_quote(market_info)
+    print(order)
+
+
+test()

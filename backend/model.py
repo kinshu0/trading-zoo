@@ -20,6 +20,18 @@ class Order:
     isBuy: bool # true if buy order, false if sell order
     timestamp: int # int of the tick the order was made
 
+    @classmethod
+    def create_market_sell_order(cls, security: str, price: float, timestamp: int):
+        """Creates a market maker sell order"""
+        return cls(
+            id="MARKET_MAKER",
+            security=security,
+            price=price * 1.05,  # 5% premium for market maker orders
+            quantity=1000,  # Large quantity available
+            isBuy=False,
+            timestamp=timestamp
+        )
+
 @dataclass
 class tradeRecord:
     seller: str # who is selling
@@ -39,7 +51,46 @@ class OrderBook:
     def __init__(self):
         self.buyHeap = [] # max heap of buy orders
         self.sellHeap = [] # min heap of sell orders
+        self.market_order = None  # Track the current market maker order
     
+    def __str__(self) -> str:
+        """
+        Returns a string representation of the order book in format:
+        <security id>  Bid: <price>(<amount>), .....
+        Ask: <price>(<amount>), ...
+        """
+        # Get security name from any order (market maker or first order in heaps)
+        security_id = ""
+        if self.market_order:
+            security_id = self.market_order.security
+        elif self.buyHeap:
+            security_id = self.buyHeap[0][1].security
+        elif self.sellHeap:
+            security_id = self.sellHeap[0][1].security
+            
+        # Format bids (buy orders) - need to negate prices as they're stored negatively
+        bids = [f"{-price:.2f}({order.quantity})" for price, order in sorted(self.buyHeap)]
+        bid_str = "Bid: " + ", ".join(bids) if bids else "Bid: -"
+        
+        # Format asks (sell orders)
+        asks = [f"{price:.2f}({order.quantity})" for price, order in sorted(self.sellHeap)]
+        ask_str = "Ask: " + ", ".join(asks) if asks else "Ask: -"
+        
+        return f"{security_id}  {bid_str}\n{ask_str}"
+    
+    def update_market_maker_order(self, security: str, current_price: float, timestamp: int):
+        """
+        Updates the market maker's sell order with the new price
+        """
+        # Remove old market maker order if it exists
+        if self.market_order is not None:
+            self.sellHeap = [(p, o) for p, o in self.sellHeap 
+                            if o.id != "MARKET_MAKER"]
+            heapq.heapify(self.sellHeap)
+        
+        # Create and add new market maker order
+        self.market_order = Order.create_market_sell_order(security, current_price, timestamp)
+        heapq.heappush(self.sellHeap, (self.market_order.price, self.market_order))
     
     def addOrder(self, order: Order):
         '''
@@ -51,7 +102,7 @@ class OrderBook:
             heapq.heappush(self.sellHeap, (order.price, order))
     
     
-    def fullfillOrders(self, order: Order, tick: int):
+    def fullfillOrders(self, tick: int):
         '''
         fullfills the orders from the orderbook, returns a list of trade records
         '''
@@ -79,6 +130,8 @@ class OrderBook:
                 heapq.heappop(self.buyHeap)
             if self.sellHeap[0][1].quantity == 0:
                 heapq.heappop(self.sellHeap)
+    
+    
                 
         return records
 
@@ -92,6 +145,16 @@ class GameOrderBook:
     def __init__(self, securities: List[str]) -> None:
         self.orderBooks : Dict[str, OrderBook] = {security: OrderBook() for security in securities} # key = security name, value = order book
     
+    def update_market_maker_orders(self, security_prices: Dict[str, float], timestamp: int) -> None:
+        """
+        Updates market maker orders for all securities with current prices
+        
+        Parameters:
+            security_prices: Dictionary mapping security names to their current prices
+            timestamp: Current game tick
+        """
+        for security, price in security_prices.items():
+            self.orderBooks[security].update_market_maker_order(security, price, timestamp)
     
     def addOrder(self, orders: List[Order]) -> None:
         '''

@@ -4,6 +4,10 @@ from dataclasses import dataclass
 from datetime import datetime
 import heapq
 
+@dataclass
+class event:
+    tick_start : int
+    event_description : str
 
 @dataclass
 class Order:

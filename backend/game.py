@@ -1,6 +1,6 @@
 from flask import Flask, Response 
 from trading_client import trading_client
-from models import event
+from model import event
 
 app = Flask(__name__)
 

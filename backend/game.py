@@ -1,6 +1,6 @@
 from flask import Flask, Response 
 from client import trading_client
-from model import event
+from model import event, GameOrderBook
 
 app = Flask(__name__)
 
@@ -8,6 +8,7 @@ game_started = False
 current_tick = 0
 event_timeline = []
 news_feed = []
+securities = []
 
 clients = dict()
 
@@ -43,27 +44,31 @@ def start():
 
     event_timeline = create_event_timeline()
 
+    securities = ["Banana", "Coconut"]
+
     game_started = True
 
     return "Game started!"
 
 @app.route("/tick")
 def tick():
-    global game_started, current_tick, clients, event_timeline, news_feed
+    global game_started, current_tick, clients, event_timeline, news_feed, securities
 
     if not game_started:
         return ("Game has not started", 403)
 
-    quotes = []
+    quotes = GameOrderBook(securities = securities)
 
     for event in event_timeline:
         if event.tick_start == current_tick:
             news_feed.append(event.event_description)
 
     for client in clients:
-        quotes.append(clients[client].get_quote())
+        quotes.addOrder(clients[client].get_quote())
 
-    # process
+    resolved = fullfillOrders(tick = current_tick)
+
+    # process resolved
 
     current_tick += 1
 

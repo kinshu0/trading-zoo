@@ -8,6 +8,8 @@ import heapq
 class event:
     tick_start : int
     event_description : str
+    security_affected : str
+    event_severity : int
 
 @dataclass
 class Order:

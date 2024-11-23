@@ -10,6 +10,7 @@ event_timeline = []
 news_feed = []
 securities = []
 
+
 clients = dict()
 
 def create_event_timeline():
@@ -40,11 +41,13 @@ def get_client_by_name(name):
 
 @app.route("/start")
 def start():
-    global game_started, event_timeline
+    global game_started, event_timeline, quotes
 
     event_timeline = create_event_timeline()
 
     securities = ["Banana", "Coconut"]
+
+    quotes = GameOrderBook(securities = securities)
 
     game_started = True
 
@@ -52,12 +55,11 @@ def start():
 
 @app.route("/tick")
 def tick():
-    global game_started, current_tick, clients, event_timeline, news_feed, securities
+    global game_started, current_tick, clients, event_timeline, news_feed, securities, quotes
 
     if not game_started:
         return ("Game has not started", 403)
 
-    quotes = GameOrderBook(securities = securities)
 
     for event in event_timeline:
         if event.tick_start == current_tick:

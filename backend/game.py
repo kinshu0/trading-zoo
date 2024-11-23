@@ -1,5 +1,5 @@
 from flask import Flask, Response 
-from trading_client import trading_client
+from client import trading_client
 from model import event
 
 app = Flask(__name__)
@@ -61,7 +61,7 @@ def tick():
             news_feed.append(event.event_description)
 
     for client in clients:
-        quotes.append(clients[client].get_quote)
+        quotes.append(clients[client].get_quote())
 
     # process
 

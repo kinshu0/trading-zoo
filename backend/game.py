@@ -23,8 +23,8 @@ clients = dict()
 
 def create_event_timeline():
     # have a timeline generated
-    return [event(tick_start = 0, event_description = "event0", security_affected="None", event_severity=0),
-            event(tick_start = 25, event_description = "event1", security_affected="None", event_severity=0),
+    return [event(tick_start = 0, event_description = "event0", security_affected="FISH", event_severity=-1),
+            event(tick_start = 25, event_description = "event1", security_affected="ICE", event_severity=3),
             # ...
             ]
 
@@ -114,10 +114,6 @@ def tick():
 
     print('-' * 100)
 
-    for event in event_timeline:
-        if event.tick_start == current_tick:
-            news_feed.append(event.event_description)
-
     for client in clients:
         order = client.get_quote(market_info = current_market_info, current_tick=current_tick)
         quotes.addOrder(order)
@@ -146,7 +142,16 @@ def tick():
 
         for security_seq_obj in securities_sequences:
             if security_seq_obj.name == security.name:
-                security.price = security_seq_obj.generateNextPrice()
+                severity = 0
+                for event in event_timeline:
+                    if event.tick_start == current_tick and event.security_affected == security.name:
+                        severity = event.event_severity
+                
+                security.price = security_seq_obj.generateNextPrice(severity)
+
+    for event in event_timeline:
+        if event.tick_start == current_tick:
+            news_feed.append(event.event_description)
 
 
     return f"{current_tick}"

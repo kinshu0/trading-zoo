@@ -1,3 +1,3 @@
 # trading-zoo
 
-    flask --app backend/server run
+    flask --app backend/game run --debug

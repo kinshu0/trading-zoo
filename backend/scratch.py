@@ -8,12 +8,16 @@ load_dotenv()
 
 config_list = [
     {
+        "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        "api_key": os.environ.get("NEBIUS_API_KEY"),
+        'base_url':"https://api.studio.nebius.ai/v1/"
+    },
+    {
         "model": "meta-llama/Meta-Llama-3.1-70B-Instruct",
         "api_key": os.environ.get("NEBIUS_API_KEY"),
         'base_url':"https://api.studio.nebius.ai/v1/"
     }
 ]
-
 agent = ConversableAgent(
     "chatbot",
     llm_config={"config_list": config_list},

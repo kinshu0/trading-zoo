@@ -9,8 +9,14 @@ from typing import Dict, List
 # Configuration for the agents
 config_list = [
     {
-        "model": "gpt-3.5-turbo",
-        "api_key": os.environ['OPENAI_API_KEY']
+        "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        "api_key": os.environ.get("NEBIUS_API_KEY"),
+        'base_url':"https://api.studio.nebius.ai/v1/"
+    },
+    {
+        "model": "meta-llama/Meta-Llama-3.1-70B-Instruct",
+        "api_key": os.environ.get("NEBIUS_API_KEY"),
+        'base_url':"https://api.studio.nebius.ai/v1/"
     }
 ]
 

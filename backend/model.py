@@ -1,5 +1,5 @@
 import requests
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, List, Any
 from dataclasses import dataclass
 from datetime import datetime
 import heapq
@@ -8,6 +8,7 @@ import heapq
 @dataclass
 class Order:
     id: str # who is making the order
+    security: str # the security the order is for
     price: float # quote price (buy or sell)
     quantity: int # quantity of the order
     isBuy: bool # true if buy order, false if sell order
@@ -17,6 +18,7 @@ class Order:
 class tradeRecord:
     seller: str # who is selling
     buyer: str # who is buying
+    security: str # the security the trade is for
     price: float # price at which the trade was made
     quantity: int # quantity of the trade
     timestamp: int # int of the tick the trade was made
@@ -75,5 +77,32 @@ class OrderBook:
         return records
 
 
+class GameOrderBook:
+    '''
+    class that has all the order books for each of the securities
+    each different security has its own  order book - maintains the heap invariant
+    '''
+    
+    def __init__(self, securities: List[str]) -> None:
+        self.orderBooks : Dict[str, OrderBook] = {security: OrderBook() for security in securities} # key = security name, value = order book
+    
+    
+    def addOrder(self, orders: List[Order]) -> None:
+        '''
+        adds all the orders from the agents to their respective order books
+        '''
+        for order in orders:
+            self.orderBooks[order.security].addOrder(order)
+    
+    def fullfillOrders(self, tick: int) -> Dict[str, List[tradeRecord]]:
+        '''
+        fullfills all the orders from the order books for all the securities
+        '''
+        records = {}
+        
+        for security, orderBook in self.orderBooks.items():
+            records[security] = orderBook.fullfillOrders(tick)
+        
+        return records
 
 

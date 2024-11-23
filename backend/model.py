@@ -96,6 +96,7 @@ class OrderBook:
         '''
         add an order to the order book from the agent
         '''
+        print(order.price, order, self.buyHeap, self.sellHeap)
         if order.isBuy:
             heapq.heappush(self.buyHeap, (-order.price, order))
         else:

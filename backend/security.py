@@ -39,7 +39,7 @@ class security:
     '''
     class that encapsulates the actions of a security, with ability to generate the next price
     '''
-    def __init__(self, name: str, volatility: str):
+    def __init__(self, name: str, volatility: str, start : int):
         '''
         volatility can be "calm", "medium", "volatile", this affects how dramatic the price changes are
         Calmer stocks have higher drift and more resistance to events
@@ -61,7 +61,7 @@ class security:
             "medium": 1.0,    
             "volatile": 2.5   
         }
-        self.prices = [1.0]
+        self.prices = [start]
         self.initial_price = 1.0  # Store initial price for mean reversion
         
     def generateNextPrice(self, severityFactor: float = 0.0):
@@ -97,7 +97,11 @@ class security:
             new_price += jump_magnitude
         
         # Ensure price doesn't get too close to zero
-        self.prices.append(max(0.1, new_price))
+
+        actual_new_price = max(0.1, new_price)
+        self.prices.append(actual_new_price)
+
+        return actual_new_price
     
 
 def test_securities(num_iterations: int = 100, event_probability: float = 0.03):

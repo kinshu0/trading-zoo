@@ -86,7 +86,7 @@ class TradingClient:
         self.portfolio : List[security_description] = [] 
         self.balance_available = starting_balance
         
-    def get_quote(self, market_info: dict[str, MarketInfo]) -> List[Order]:
+    def get_quote(self, market_info: dict[str, MarketInfo], current_tick : int) -> List[Order]:
         """
         Generate quotes based on market information for multiple items
         
@@ -129,7 +129,7 @@ class TradingClient:
                     price=float(price),
                     quantity=int(quantity),
                     isBuy=(action.upper() == "BUY"),
-                    timestamp=int(time.time())
+                    timestamp=current_tick
                 ))
         
         return orders
@@ -154,5 +154,3 @@ def test():
     orders = tc.get_quote(market_info)
     for order in orders:
         print(order)
-
-test()

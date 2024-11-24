@@ -189,7 +189,8 @@ def tick():
         securities=[sec.name for sec in securities_descriptions], 
         portolio_securities=[sec.security_name for sec in client.portfolio if sec.quantity > 0],
         quotes=quotes,
-        current_tick=current_tick)
+        current_tick=current_tick,
+        current_balance=client.current_balance)
 
         quotes.addOrder([o for o in order if o.id != "NONE"])
 

@@ -54,7 +54,7 @@ class TradingClient:
         return sum([sec.price * sec.quantity for sec in self.portfolio]) + self.balance_available
         
     #def get_quote(self, market_info: dict[str, MarketInfo], current_tick : int, balance, portfolio) -> List[Order]:
-    def get_quote(self, securities : list, portolio_securities : list, quotes, current_tick : int) -> List[Order]:
+    def get_quote(self, securities : list, portolio_securities : list, quotes, current_tick : int, current_balance : int) -> List[Order]:
         """
         Generate quotes based on market information for multiple items
         
@@ -89,7 +89,7 @@ class TradingClient:
 
         orders = []
 
-        if (res not in securities and type_order == 'BUY') or (res not in portolio_securities and type_order == 'SELL'):
+        if (res not in securities and type_order == 'BUY') or (res not in portolio_securities and type_order == 'SELL') or (quotes.orderBooks[res].sellHeap[0][0] > current_balance):
             orders.append(Order(
                 id='NONE',
                 security=res,

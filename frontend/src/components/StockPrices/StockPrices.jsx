@@ -1,47 +1,42 @@
-import React, { useState, useEffect } from 'react'
+import React, { forwardRef, useImperativeHandle, useRef } from 'react'
 import { ArrowUpRight, ArrowDownRight } from 'lucide-react'
 
-function StockPrices() {
-  const [stocks, setStocks] = useState([
-    { name: 'Bananas', ticker: 'BNNA', price: 10.00, change: 0, icon: '🍌' },
-    { name: 'Ice', ticker: 'ICEE', price: 15.00, change: 0, icon: '🧊' },
-    { name: 'Pineapples', ticker: 'PINE', price: 20.00, change: 0, icon: '🍍' },
-    { name: 'Fish', ticker: 'FISH', price: 25.00, change: 0, icon: '🐟' },
-    { name: 'Pebbles', ticker: 'PEBB', price: 50.00, change: 0, icon: '🪨' }
-  ])
+const StockPrices = forwardRef(({ data }, ref) => {
+  const pricesRef = useRef({})
 
-  // Small random fluctuations
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStocks(prevStocks => prevStocks.map(stock => {
-        const randomChange = (Math.random() - 0.5) * 0.2 // Small random changes
-        const newPrice = stock.price * (1 + randomChange)
-        return {
-          ...stock,
-          price: newPrice,
-          change: (randomChange * 100)
-        }
-      }))
-    }, 3000)
+  // Map securities data to our display format
+  const stocks = Object.entries(data).map(([name, price]) => {
+    const previousPrice = pricesRef.current[name] || price
+    const change = ((price - previousPrice) / previousPrice) * 100
 
-    return () => clearInterval(interval)
-  }, [])
+    // Update stored price
+    pricesRef.current[name] = price
 
-  // Handle news impacts
-  const handleNewsImpact = (ticker, multiplier) => {
-    setStocks(prevStocks => prevStocks.map(stock => {
-      if (stock.ticker === ticker) {
-        const newPrice = stock.price * multiplier
-        const percentChange = ((multiplier - 1) * 100)
-        return {
-          ...stock,
-          price: newPrice,
-          change: percentChange
-        }
+    const getEmoji = (name) => {
+      const emojiMap = {
+        'BANANA': '🍌',
+        'ICE': '🧊',
+        'PINEAPPLES': '🍍',
+        'FISH': '🐟',
+        'PEBBLE': '🪨'
       }
-      return stock
-    }))
-  }
+      return emojiMap[name] || '📈'
+    }
+
+    return {
+      name: name.charAt(0) + name.slice(1).toLowerCase(),
+      ticker: name,
+      price,
+      icon: getEmoji(name),
+      change
+    }
+  })
+
+  useImperativeHandle(ref, () => ({
+    handleNewsImpact: (ticker, multiplier) => {
+      console.log('News impact:', ticker, multiplier)
+    }
+  }), [])
 
   return (
     <div className="divide-y divide-gray-100">
@@ -57,7 +52,7 @@ function StockPrices() {
             </div>
             <div className="text-right">
               <div className="text-xs tabular-nums">
-                JC {stock.price.toFixed(2)}
+                JC {Number(stock.price).toFixed(2)}
               </div>
               <div className={`text-[0.6rem] flex items-center gap-0.5 ${
                 stock.change >= 0 ? 'text-green-600' : 'text-red-600'
@@ -75,6 +70,8 @@ function StockPrices() {
       ))}
     </div>
   )
-}
+})
+
+StockPrices.displayName = 'StockPrices'
 
 export default StockPrices

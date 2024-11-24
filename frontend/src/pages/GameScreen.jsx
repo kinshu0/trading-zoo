@@ -9,6 +9,7 @@ import RecentTrades from '../components/RecentTrades/RecentTrades'
 import TeamPortfolios from '../components/TeamPortfolios/TeamPortfolios'
 import { toast } from 'react-toastify';
 import api from '../services/api'
+import HumanControls from '../components/HumanControls/HumanControls'
 
 function GameScreen() {
   const [expandedComponent, setExpandedComponent] = useState(null)
@@ -144,6 +145,7 @@ function GameScreen() {
           </motion.div>
         </div>
       </div>
+      <HumanControls securities={securities} />
 
       <AnimatePresence>
         {expandedComponent && (

@@ -9,7 +9,7 @@ from flask_cors import CORS
 from model import Order
 import json
 from human import HumanClient
-
+import time
 human_state = {
     'orders': []
 }
@@ -175,6 +175,8 @@ def tick():
 
     if not game_started:
         return ("Game has not started", 403)
+    
+    time.sleep(5)
 
     current_market_info = dict()
 

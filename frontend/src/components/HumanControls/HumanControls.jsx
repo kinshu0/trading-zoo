@@ -6,15 +6,17 @@ function HumanControls({ securities }) {
   const handleTrade = async (security, isBuy) => {
     try {
       const currentPrice = securities[security]
-      const price = isBuy ? currentPrice * 1.05 : currentPrice * 0.95
-
-      const response = await api.get(`/add_order/Hooman/${security}/${price}/1/${isBuy}`)
-      if (response.status === 200) {
-        toast.success(`${isBuy ? 'Bought' : 'Sold'} 1 ${security} at ${price.toFixed(2)}`)
+      const price = currentPrice
+      
+      const isBuyStr = isBuy ? 'True' : 'False'
+      const orderResponse = await api.get(`/add_order/hooman/${security}/${price}/1/${isBuyStr}`)
+      
+      if (orderResponse.status === 200) {
+        toast.success(`Order placed: ${isBuy ? 'Buy' : 'Sell'} 1 ${security} at ${price.toFixed(2)}`)
       }
     } catch (error) {
       console.error('Failed to place order:', error)
-      toast.error(`Failed to ${isBuy ? 'buy' : 'sell'} ${security}`)
+      toast.error(`Failed to place ${isBuy ? 'buy' : 'sell'} order for ${security}`)
     }
   }
 

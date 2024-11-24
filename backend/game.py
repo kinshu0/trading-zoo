@@ -84,7 +84,12 @@ def register_client(name):
 
 @app.route("/clients")
 def get_clients():
-    return {client.team_name : full_portfolio(portfolio=client.portfolio, balance=client.balance_available) for client in clients}
+    client_portfolios = {}
+    for client in clients:
+        # Convert team name to match the expected format
+        name = "hooman" if client.team_name.lower() == "hooman" else client.team_name
+        client_portfolios[name] = full_portfolio(portfolio=client.portfolio, balance=client.balance_available)
+    return client_portfolios
 
 @app.route("/client/<string:name>")
 def get_client_by_name(name):
@@ -103,7 +108,7 @@ def start():
             TradingClient(team_name = "foxes", starting_balance = 100),
             TradingClient(team_name = "monkeys", starting_balance = 100),
             TradingClient(team_name = "iguanas", starting_balance = 100),
-            HumanClient(team_name = "Hooman", starting_balance = 100, state=human_state)
+            HumanClient(team_name = "hooman", starting_balance = 100, state=human_state)
             ]
 
     event_timeline = create_event_timeline()
@@ -290,13 +295,13 @@ def tick():
 sample call: http://127.0.0.1:5000/add_order/hooman/ICE/1.0/100/True
 '''
 
-@app.route("/add_order/<string:team_name>/<string:security>/<float:price>/<int:quantity>/<string:isBuy>")
+@app.route("/add_order/<string:team_name>/<string:security>/<string:price>/<int:quantity>/<string:isBuy>")
 def add_order(team_name, security, price, quantity, isBuy):
     isBuy = True if isBuy == "True" else False
     o = Order(
         id=team_name,
         security=security,
-        price=price,
+        price=float(price),  # Cast string to float here
         quantity=quantity,
         isBuy=isBuy,
         timestamp=current_tick

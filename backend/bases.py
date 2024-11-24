@@ -45,7 +45,7 @@ class Order:
         return cls(
             id="MARKET_MAKER",
             security=security,
-            price=price * 1.05,  # 5% premium for market maker orders
+            price=price * 1.00,  # 5% premium for market maker orders
             quantity=1000,  # Large quantity available
             isBuy=False,
             timestamp=timestamp

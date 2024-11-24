@@ -5,7 +5,7 @@ from client import security_details
 
 class HumanClient:
     def __init__(self, team_name: str, starting_balance : int, state):
-        self.team_name = 'Hooman'
+        self.team_name = 'hooman'
 
         self.portfolio : List[security_details] = [] 
         self.balance_available = starting_balance

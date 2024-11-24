@@ -14,6 +14,7 @@ human_state = {
     'orders': []
 }
 
+
 app = Flask(__name__)
 CORS(app, 
      resources={r"/*": {
@@ -102,7 +103,7 @@ def start():
             TradingClient(team_name = "foxes", starting_balance = 100),
             TradingClient(team_name = "monkeys", starting_balance = 100),
             TradingClient(team_name = "iguanas", starting_balance = 100),
-            HumanClient(team_name = "Hoomans", starting_balance = 100, state=human_state)
+            HumanClient(team_name = "Hooman", starting_balance = 100, state=human_state)
             ]
 
     event_timeline = create_event_timeline()
@@ -177,6 +178,8 @@ def tick():
         return ("Game has not started", 403)
     
     time.sleep(5)
+
+    # Add sleep to slow down ticks  # 5 second delay between ticks
 
     current_market_info = dict()
 
@@ -284,7 +287,7 @@ def tick():
     return f"{current_tick}"
 
 '''
-sample call: http://127.0.0.1:5000/add_order/hoomans/ICE/1.0/100/True
+sample call: http://127.0.0.1:5000/add_order/hooman/ICE/1.0/100/True
 '''
 
 @app.route("/add_order/<string:team_name>/<string:security>/<float:price>/<int:quantity>/<string:isBuy>")

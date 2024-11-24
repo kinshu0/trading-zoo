@@ -38,7 +38,7 @@ def register_client(name):
 
 @app.route("/clients")
 def get_clients():
-    return list(clients.keys())
+    return clients
 
 @app.route("/client/<string:name>")
 def get_client_by_name(name):
@@ -139,7 +139,17 @@ def tick():
 
     for r in resolved.values():
         completed_transactions += r
-    pending_transactions = quotes
+
+    pending_transactions = []
+
+    for book in quotes.orderBooks.values():
+        for i in book.buyHeap:
+            if i[1].id != "MARKET_MAKER":
+                pending_transactions.append(i[1])
+
+        for i in book.sellHeap:
+            if i[1].id != "MARKET_MAKER":
+                pending_transactions.append(i[1])
 
 
     print('COMPLETED TRANSACTIONS:', completed_transactions)

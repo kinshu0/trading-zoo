@@ -131,7 +131,7 @@ def tick():
 
 
     for client in clients:
-        order = client.get_quote(market_info = current_market_info, current_tick=current_tick)
+        order = client.get_quote(market_info = current_market_info, current_tick=current_tick, balance=client.balance_available, portfolio=client.portfolio)
         quotes.addOrder(order)
 
     resolved = quotes.fullfillOrders(tick = current_tick)

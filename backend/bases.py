@@ -14,6 +14,11 @@ class security_details:
     price : int
 
 @dataclass
+class full_portfolio:
+    portfolio : List[security_details]
+    balance : int
+
+@dataclass
 class MarketInfo:
     story: str
     orderbook: str

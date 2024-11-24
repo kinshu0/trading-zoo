@@ -172,17 +172,17 @@ monkey_pr = create_agent("Monkey PR", MONKEY_IDENTITY, PR_ROLE)
 
 # Group agents by team for easier management
 agents = {
-    "penguin_team": {
+    "penguins": {
         "analyst": penguin_analyst,
         "trader": penguin_trader,
         "pr": penguin_pr
     },
-    "fox_team": {
+    "foxes": {
         "analyst": fox_analyst,
         "trader": fox_trader,
         "pr": fox_pr
     },
-    "monkey_team": {
+    "monkeys": {
         "analyst": monkey_analyst,
         "trader": monkey_trader,
         "pr": monkey_pr

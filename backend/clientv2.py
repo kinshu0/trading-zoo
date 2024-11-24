@@ -16,12 +16,12 @@ class security_description:
 
 config_list = [
     {
-        "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        "model": "meta-llama/Meta-Llama-3.1-70B-Instruct",
         "api_key": os.environ.get("NEBIUS_API_KEY"),
         'base_url':"https://api.studio.nebius.ai/v1/"
     },
     {
-        "model": "meta-llama/Meta-Llama-3.1-70B-Instruct",
+        "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
         "api_key": os.environ.get("NEBIUS_API_KEY"),
         'base_url':"https://api.studio.nebius.ai/v1/"
     }
@@ -48,7 +48,7 @@ class TradingClient:
         self.team_name = team_name.lower()
         
         # Get the appropriate team agents from the agents dictionary
-        team_agents = agents[f"{self.team_name}_team"]
+        team_agents = agents[self.team_name]
         self.analyst = team_agents["analyst"]
         self.trader = team_agents["trader"]
         self.pr = team_agents["pr"]
@@ -92,10 +92,13 @@ class TradingClient:
             market_data["orderbook"][item] = info.orderbook
             market_data["trade_history"].extend(info.trade_history)
         
+        # test_msg = 'hello how are you'
+
         # Get analysis from analyst agent
         analysis_result = self.analyst.initiate_chat(
             self.trader,
             message=json.dumps(market_data),
+            # message=test_msg,
             max_turns=1
         )
         

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LineChart, Newspaper, History, Briefcase, Maximize2, Minimize2 } from 'lucide-react'
 import Header from '../components/Header'
@@ -12,15 +12,16 @@ import api from '../services/api'
 
 function GameScreen() {
   const [expandedComponent, setExpandedComponent] = useState(null)
-  const [stockPriceRef, setStockPriceRef] = useState(null)
+  const stockPriceRef = useRef(null)
   const [gameStarted, setGameStarted] = useState(false)
   const [securities, setSecurities] = useState({})
   const [clients, setClients] = useState({})
   const [transactions, setTransactions] = useState({ completed: [], pending: [] })
+  const [isStarting, setIsStarting] = useState(false)
 
   const handleNewsImpact = (ticker, multiplier) => {
     if (stockPriceRef) {
-      stockPriceRef.handleNewsImpact(ticker, multiplier)
+      stockPriceRef.current.handleNewsImpact(ticker, multiplier)
     }
   }
 
@@ -84,21 +85,32 @@ function GameScreen() {
   };
 
   const startGame = async () => {
+    if (isStarting) return
+    
     try {
-      await api.get('/start');
-      setGameStarted(true);
-      // Start the first tick after game starts
-      fetchGameData();
+      setIsStarting(true)
+      await api.get('/start')
+      setGameStarted(true)
+      fetchGameData()
     } catch (error) {
-      console.error('Failed to start game:', error);
-      toast.error('Failed to start game');
+      console.error('Failed to start game:', error)
+      toast.error('Failed to start game')
+    } finally {
+      setIsStarting(false)
     }
-  };
+  }
 
   useEffect(() => {
-    startGame();
-    // No need for interval cleanup since we're using recursive setTimeout
-  }, []);
+    let mounted = true
+
+    if (mounted && !gameStarted) {
+      startGame()
+    }
+
+    return () => {
+      mounted = false
+    }
+  }, [gameStarted])
 
   return (
     <div className="h-screen flex flex-col">
@@ -111,7 +123,7 @@ function GameScreen() {
             </ComponentWrapper>
             
             <ComponentWrapper title="Stock Prices" icon={LineChart} name="stocks">
-              <StockPrices data={securities} ref={setStockPriceRef} />
+              <StockPrices data={securities} ref={stockPriceRef} />
             </ComponentWrapper>
           </motion.div>
 

@@ -1,27 +1,36 @@
 import React from 'react'
-import { Statistic, Tag, List, Typography } from 'antd'
+import { Statistic, Tag, Typography } from 'antd'
 
 const { Text } = Typography
 
-function TeamPortfolios() {
-  const teams = [
-    {
-      name: 'Penguins', value: 125000, change: 5.2,
-      holdings: [{ stock: 'BNNA', shares: 100 }, { stock: 'PEBB', shares: 150 }]
-    },
-    {
-      name: 'Monkeys', value: 115000, change: -2.1,
-      holdings: [{ stock: 'FISH', shares: 200 }, { stock: 'PEBB', shares: 75 }]
-    },
-    {
-      name: 'Foxes', value: 135000, change: 7.5,
-      holdings: [{ stock: 'BNNA', shares: 150 }, { stock: 'FISH', shares: 100 }]
-    },
-    {
-      name: 'Iguanas', value: 118000, change: 1.8,
-      holdings: [{ stock: 'BNNA', shares: 125 }, { stock: 'PINE', shares: 100 }]
+function TeamPortfolios({ data }) {
+  // Early return if no data
+  if (!data) return null
+
+  // Convert the data object into an array
+  const teams = Object.entries(data).map(([teamName, teamData]) => {
+    // Calculate total portfolio value
+    const portfolioValue = teamData.portfolio.reduce((total, holding) => {
+      return total + (holding.quantity * holding.price)
+    }, 0)
+
+    // Calculate total portfolio value including cash
+    const totalValue = portfolioValue + teamData.balance
+
+    // For this example, we'll use a mock change value
+    // In a real app, you'd want to track historical values to calculate actual change
+    const change = ((totalValue - 100) / 100) * 100 // Assuming 100 was starting balance
+
+    return {
+      name: teamName,
+      value: totalValue,
+      change: parseFloat(change.toFixed(1)),
+      holdings: teamData.portfolio.map(holding => ({
+        stock: holding.security_name,
+        shares: holding.quantity
+      }))
     }
-  ]
+  })
 
   return (
     <div className="divide-y divide-gray-100">
@@ -29,7 +38,7 @@ function TeamPortfolios() {
         <div key={team.name} className="p-1.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <Text strong className="text-xs">{team.name}</Text>
+              <Text strong className="text-xs capitalize">{team.name}</Text>
               <Tag 
                 className="text-[0.6rem] leading-none m-0 h-3.5 flex items-center" 
                 color={team.change >= 0 ? 'success' : 'error'}

@@ -8,6 +8,11 @@ import random
 from flask_cors import CORS
 from model import Order
 import json
+from human import HumanClient
+
+human_state = {
+    'orders': []
+}
 
 app = Flask(__name__)
 CORS(app, 
@@ -97,6 +102,7 @@ def start():
             TradingClient(team_name = "foxes", starting_balance = 100),
             TradingClient(team_name = "monkeys", starting_balance = 100),
             TradingClient(team_name = "iguanas", starting_balance = 100),
+            HumanClient(team_name = "Hoomans", starting_balance = 100, state=human_state)
             ]
 
     event_timeline = create_event_timeline()
@@ -200,6 +206,8 @@ def tick():
 
         quotes.addOrder([o for o in order if o.id != "NONE"])
 
+    human_state['orders'] = []
+
     resolved = quotes.fullfillOrders(tick = current_tick)
 
     for r in resolved.values():
@@ -289,7 +297,7 @@ def add_order(team_name, security, price, quantity, isBuy):
         timestamp=current_tick
     )
 
-    quotes.addOrder([o])
+    human_state['orders'].append(o)
 
     return "OK"
 

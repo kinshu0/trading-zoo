@@ -41,8 +41,8 @@ class security_manager:
             "volatile": 0.15   
         }
         self.drift_levels = {
-            "calm": 0.003,     
-            "medium": 0.0003,  
+            "calm": 0.005,     
+            "medium": 0.0005,  
             "volatile": 0.0    # Changed from negative to neutral drift
         }
         self.event_susceptibility = {

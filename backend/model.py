@@ -80,7 +80,7 @@ class OrderBook:
         self.market_buy_order = Order(
             id="MARKET_MAKER",
             security=security,
-            price=current_price * 0.95,
+            price=current_price * 1.00,
             quantity=1000,
             isBuy=True,
             timestamp=timestamp

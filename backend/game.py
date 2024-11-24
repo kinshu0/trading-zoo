@@ -38,34 +38,34 @@ def create_event_timeline():
     # have a timeline generated
     events = [
         ("A massive ice storm hits the northern regions, increasing ice production", 2, ["ICE"]),
-        ("Devastating fish disease outbreak decimates populations", -3, ["FISH"]), 
-        ("Monkeys discover revolutionary banana harvesting technique", 3, ["BANANA"]),
-        ("Category 5 tropical storm ravages pineapple farms", -3, ["PINEAPPLE"]),
-        ("Minor shift in penguin migration affects fishing", -1, ["FISH", "ICE"]),
+        # ("Devastating fish disease outbreak decimates populations", -1, ["FISH"]), 
+        ("Monkeys discover revolutionary banana harvesting technique", 2, ["BANANA"]),
+        ("Category 5 tropical storm ravages pineapple farms", -1, ["PINEAPPLE"]),
+        # ("Minor shift in penguin migration affects fishing", -1, ["FISH", "ICE"]),
         ("Breakthrough preservation technology for tropical fruits", 2, ["BANANA", "PINEAPPLE"]),
-        ("Coastal erosion impacts pebble quality", -1, ["PEBBLES"]),
-        ("Major volcanic eruption creates rare pebble deposits", 3, ["PEBBLES"]), 
-        ("Warming oceans disrupt fish breeding", -2, ["FISH"]),
+        # ("Coastal erosion impacts pebble quality", -1, ["PEBBLES"]),
+        ("Major volcanic eruption creates rare pebble deposits", 2, ["PEBBLES"]), 
+        ("Warming oceans disrupt fish breeding", -1, ["FISH"]),
         ("Record cold temperatures boost ice production", 2, ["ICE"]),
-        ("Short-term banana worker strike", -1, ["BANANA"]),
+        # ("Short-term banana worker strike", -1, ["BANANA"]),
         ("New pebble enhancement process shows promise", 1, ["PEBBLES"]),
-        ("Massive fish school migration discovery", 2, ["FISH"]),
-        ("Severe drought threatens fruit harvests", -2, ["BANANA", "PINEAPPLE"]),
+        ("Massive fish school migration discovery", 3, ["FISH"]),
+        # ("Severe drought threatens fruit harvests", -1, ["BANANA", "PINEAPPLE"]),
         ("Revolutionary ice harvesting method unveiled", 3, ["ICE"]),
-        ("Arctic blast creates ideal ice conditions", 1, ["ICE"]),
-        ("Toxic algae bloom threatens fish stocks", -2, ["FISH"]),
+        ("Arctic blast creates ideal ice conditions", 2, ["ICE"]),
+        ("Toxic algae bloom threatens fish stocks", -1, ["FISH"]),
         ("Genetic breakthrough improves banana yield", 2, ["BANANA"]),
-        ("Pest infestation damages pineapple crops", -2, ["PINEAPPLE"]),
-        ("Changing ocean currents impact marine life", -1, ["FISH", "ICE"]),
-        ("AI-powered fruit ripening system developed", 1, ["BANANA", "PINEAPPLE"]),
-        ("Construction boom depletes pebble supplies", -2, ["PEBBLES"]),
+        # ("Pest infestation damages pineapple crops", -1, ["PINEAPPLE"]),
+        # ("Changing ocean currents impact marine life", -1, ["FISH", "ICE"]),
+        ("AI-powered fruit ripening system developed", 3, ["BANANA", "PINEAPPLE"]),
+        ("Construction boom depletes pebble supplies", -1, ["PEBBLES"]),
         ("Ancient premium pebble deposit discovered", 2, ["PEBBLES"]),
-        ("Overfishing crisis in key regions", -3, ["FISH"]),
+        ("Overfishing crisis in key regions", -1, ["FISH"]),
         ("New ice storage technology extends shelf life", 1, ["ICE"]),
-        ("Disease affects banana plantation yields", -2, ["BANANA"]),
+        ("Disease affects banana plantation yields", -1, ["BANANA"]),
         ("International demand for premium pebbles soars", 2, ["PEBBLES"]),
         ("Sustainable fishing practices boost populations", 1, ["FISH"]),
-        ("Extended dry season impacts fruit production", -1, ["BANANA", "PINEAPPLE"]),
+        ("Extended dry season impacts fruit production", -2, ["BANANA", "PINEAPPLE"]),
         ("Polar vortex creates ice surplus", 2, ["ICE"])
     ]
     
@@ -106,28 +106,29 @@ def start():
             HumanClient(team_name = "Hooman", starting_balance = 100, state=human_state)
             ]
 
+
     event_timeline = create_event_timeline()
 
     securities_descriptions = [
         security_description(name = "ICE",
          story = "ice commodity",
-         price = 1
+         price = 3
          ),
         security_description(name = "FISH",
          story = "fish commodity",
-         price = 1
+         price = 3
          ),
         security_description(name = "BANANA",
          story = "banana commodity",
-         price = 1
+         price = 3
          ),
         security_description(name = "PEBBLE",
          story = "pebble commodity",
-         price = 1
+         price = 3
          ),
         security_description(name = "PINEAPPLES",
          story = "pineapple commodity",
-         price = 1
+         price = 3
          )
 
     ]
@@ -177,7 +178,11 @@ def tick():
     if not game_started:
         return ("Game has not started", 403)
     
+    if current_tick == 0:
+        current_tick = 1
+        return "1"
     time.sleep(5)
+
 
     # Add sleep to slow down ticks  # 5 second delay between ticks
 
@@ -270,7 +275,7 @@ def tick():
     sev = 0
     event_desc = ""
 
-    if random.random() < 0.2 and len(event_timeline) > 0:  # 1/5 chance
+    if (random.random() < 0.3 and len(event_timeline) > 0):  # 1/5 chance
         random_event_index = random.randint(0, len(event_timeline)-1)
         event_desc, sev, affected = event_timeline.pop(random_event_index)
         severity = sev

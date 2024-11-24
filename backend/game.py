@@ -142,7 +142,13 @@ def tick():
 
 
     for client in clients:
-        order = client.get_quote(market_info = current_market_info, current_tick=current_tick, balance=client.balance_available, portfolio=client.portfolio)
+        #order = client.get_quote(market_info = current_market_info, current_tick=current_tick, balance=client.balance_available, portfolio=client.portfolio)
+        order = client.get_quote(
+        securities=[sec.name for sec in securities_descriptions], 
+        portolio_securities=[sec.security_name for sec in client.portfolio if sec.quantity > 0],
+        quotes=quotes,
+        current_tick=current_tick)
+
         quotes.addOrder([o for o in order if o.id != "NONE"])
 
     resolved = quotes.fullfillOrders(tick = current_tick)

@@ -4,6 +4,7 @@ load_dotenv()
 from dataclasses import dataclass
 from typing import List
 from bases import security_details, MarketInfo, Order
+import random
 
 from autogen import ConversableAgent
 from dataclasses import dataclass
@@ -29,149 +30,6 @@ config_list = [
     # },
 ]
 
-BASE_PROMPT = """You are participating in a whimsical asset trading simulation with the following mechanics:
-- Each trading day consists of exactly 15 ticks
-- News events are only provided at tick 1 of each day
-- You receive orderbook, positions, performance, and trade history data each tick
-- The ultimate goal is to maximize trading profits while maintaining team character"""
-
-PENGUIN_IDENTITY = """You are part of the Penguin Trading Group, known for your methodical, conservative approach to trading. 
-Like your Antarctic nature, you prefer steady, calculated moves over risky ventures. Your team values stability and thorough 
-analysis, taking pride in your ability to weather market storms through careful position management. You communicate in a 
-formal, precise manner, often using ice and weather-related metaphors."""
-
-FOX_IDENTITY = """You are a member of the Fox Trading Collective, characterized by your clever and opportunistic trading style. 
-Your team excels at spotting market inefficiencies and executing swift, precise trades. Like your vulpine nature, you are 
-adaptable and quick to react to changing market conditions. You communicate with wit and cunning, often using predator-prey 
-metaphors and demonstrating strategic thinking."""
-
-MONKEY_IDENTITY = """You are part of the Monkey Trading Squad, known for your highly active and social trading approach. 
-Your team thrives on market energy and momentum, often engaging in rapid trading when opportunities arise. Like your primate 
-nature, you're curious and quick to explore new strategies, though sometimes prone to exciting swings. You communicate 
-energetically, using tree and jungle metaphors, and maintain a playful yet intelligent tone."""
-
-
-IGUANA_IDENTITY = """You are part of the Iguana Trading Alliance, known for your patient and adaptable trading approach.
-Like your reptilian nature, you excel at preserving energy and striking decisively when conditions are optimal. Your team
-specializes in basking in market data until the perfect opportunity presents itself, then executing with lightning-quick
-precision. You're particularly active during hot market periods but can expertly conserve resources during cooler phases.
-You communicate in a measured, deliberate manner, often using sun, heat, and terrain-related metaphors while maintaining
-a cool-blooded composure."""
-
-ANALYST_ROLE = """As the team's Analyst, your role is to process news and market data into actionable recommendations.
-
-For each analysis cycle, you should:
-1. Process news content for market impact (tick 1 only)
-2. Analyze orderbook patterns and trade history
-3. Consider team positions and performance
-4. Generate trading recommendations
-
-Rules to adhere to:
-1. You can't buy more than your balance allows
-2. You can't sell more than your current position
-"""
-
-# ANALYST_ROLE = """As the team's Analyst, your role is to process news and market data into actionable recommendations.
-
-# For each analysis cycle, you should:
-# 1. Process news content for market impact (tick 1 only)
-# 2. Analyze orderbook patterns and trade history
-# 3. Consider team positions and performance
-# 4. Generate trading recommendations
-
-# Rules to adhere to:
-# 1. You can't buy more than your balance allows
-# 2. You can't sell more than your current position
-# """
-
-TRADER_ROLE = """As the team's Trader, your role is to execute trading recommendations from the Analyst into order formats.
-You must respond EXACTLY in this format with no other text:
-ITEM: ACTION|PRICE|QUANTITY
-
-For multiple items, put each order on a new line:
-ICE: BUY|50|100
-FISH: SELL|30|200
-
-Only valid actions are BUY or SELL.
-Price must be a number.
-Quantity must be a whole number.
-Return 'TERMINATE' when complete."""
-
-
-ANALYST_TRADER_ROLE = """Process market data and news content to make trading decisions, then output ONLY the order format below.
-
-Rules:
-1. Can't buy more than balance allows
-2. Can't sell more than current position
-
-Response must be EXACTLY in this format with no other text:
-ITEM: ACTION|PRICE|QUANTITY
-
-For multiple items, put each order on a new line:
-ICE: BUY|50|100
-FISH: SELL|30|200
-
-Only valid actions are BUY or SELL.
-Price must be a number.
-Quantity must be a whole number.
-Return 'TERMINATE' when complete."""
-
-agents = {
-    "penguins": {
-        "analyst": BASE_PROMPT + "\n" + PENGUIN_IDENTITY + "\n" + ANALYST_ROLE,
-        "trader": TRADER_ROLE
-    },
-    "foxes": {
-        "analyst": BASE_PROMPT + "\n" + FOX_IDENTITY + "\n" + ANALYST_ROLE,
-        "trader": TRADER_ROLE
-    },
-    "monkeys": {
-        "analyst": BASE_PROMPT + "\n" + MONKEY_IDENTITY + "\n" + ANALYST_ROLE,
-        "trader": TRADER_ROLE
-    },
-    "iguanas": {
-        "analyst": BASE_PROMPT + "\n" + IGUANA_IDENTITY + "\n" + ANALYST_ROLE,
-        "trader": TRADER_ROLE
-    }
-}
-
-# Analyst agent that solves riddles and analyzes market information
-analyst = ConversableAgent(
-    name="Wise Owl Analyst",
-    system_message="""You are a wise owl market analyst in a whimsical trading game. 
-    Your job is to decipher the hidden meanings in story riddles and analyze the orderbook 
-    to make trading recommendations for your animal team.
-
-    For each item, you should:
-    1. Decode the story riddle to understand its impact on supply and demand
-    2. Analyze the orderbook patterns
-    3. Make a clever trading recommendation
-    
-    Format your response as: ITEM: ACTION|PRICE|QUANTITY
-    Include a brief explanation of how you decoded the riddle!
-    
-    Return 'TERMINATE' when your analysis is complete.""",
-    llm_config={"config_list": config_list},
-)
-
-# Trader agent that converts analysis into orders with strict formatting
-trader = ConversableAgent(
-    name="Deal-Making Agent",
-    system_message="""You are a trading agent that converts analysis into order formats.
-    You must respond EXACTLY in this format with no other text:
-    ITEM: ACTION|PRICE|QUANTITY
-    
-    For multiple items, put each order on a new line:
-    ICE: BUY|50|100
-    FISH: SELL|30|200
-    
-    Only valid actions are BUY or SELL.
-    Price must be a number.
-    Quantity must be a whole number.
-    Return 'TERMINATE' when complete.""",
-    llm_config={"config_list": config_list},
-)
-
 class TradingClient:
     def __init__(self, team_name: str, starting_balance : int):
         """
@@ -184,25 +42,19 @@ class TradingClient:
         self.team_name = team_name
 
         self.analyst = ConversableAgent(
-            name=f"{team_name} Analyst",
-            system_message=agents[team_name]["analyst"],
-            llm_config={"config_list": config_list},
-        )
-        self.trader = ConversableAgent(
-            name=f"{team_name} Trader",
-            system_message=agents[team_name]["trader"],
+            name=f"Base guy",
+            system_message=f"You are a {team_name}, make the best commodity choices. Your answer should only be the name of the commodity.",
             llm_config={"config_list": config_list},
         )
 
-        # self.analyst = analyst
-        # self.trader = trader
         self.portfolio : List[security_details] = [] 
         self.balance_available = starting_balance
     
     def get_portfolio_valuation(self):
         return sum([sec.price * sec.quantity for sec in self.portfolio]) + self.balance_available
         
-    def get_quote(self, market_info: dict[str, MarketInfo], current_tick : int, balance, portfolio) -> List[Order]:
+    #def get_quote(self, market_info: dict[str, MarketInfo], current_tick : int, balance, portfolio) -> List[Order]:
+    def get_quote(self, securities : list, portolio_securities : list, quotes, current_tick : int) -> List[Order]:
         """
         Generate quotes based on market information for multiple items
         
@@ -213,72 +65,49 @@ class TradingClient:
             List of Order objects with the recommended trades
         """
         # Format market info for analyst
-        analysis_request = f"\nYou are advising Team {self.team_name}!\n"
-        for item, info in market_info.items():
-            analysis_request += f"\nItem: {item}\n"
-            analysis_request += f"Story Riddle: {info.story}\n"
-            analysis_request += f"Current State of Orderbook\n: {info.orderbook}\n"
-            analysis_request += f"Current free balance: {balance}\n"
-            analysis_request += f"Current portfolio: {str(portfolio)}\n"
+
+        random.shuffle(securities)
+        random.shuffle(portolio_securities)
+        # print(securities)
+        # print(portolio_securities)
+        # print(current_tick)
+        type_order = random.choice(['BUY', 'SELL'])
+
+        if not portolio_securities or type_order == 'BUY':
+            req = f"Choose your preferred commodity to buy as the animal you are. You can only choose from the following items: {', '.join(securities)}"
+        elif type_order == 'SELL':
+            req = f"Choose your preferred commodity to sell as the animal you are. You can only choose from the following items: {', '.join(portolio_securities)}"
         
         # First get analysis from analyst agent
-        analysis_result = self.trader.initiate_chat(
+        analysis_result = self.analyst.initiate_chat(
             self.analyst,
-            message=analysis_request,
+            message=req,
             max_turns=1
         )
 
-        analyst_response = analysis_result.chat_history[1]['content']
+        res = analysis_result.chat_history[2]['content'].upper()
 
-        trader_result = self.analyst.initiate_chat(
-            self.trader,
-            message=analyst_response,
-            max_turns=1
-        )
-
-        trader_response = trader_result.chat_history[1]['content']
-
-        print(f'ANALYSIS REQUEST:\n{analysis_request}')
-        print(f'ANALYST RESPONSE:\n{analyst_response}')
-
-        # analysis_result = self.analyst.initiate_chat(
-        #     self.trader,
-        #     message=analysis_request,
-        #     max_turns=1
-        # )
-        
-        # # Get the last message from analyst
-        # analyst_response = analysis_result.chat_history[1]['content']
-        
-        # # Now have trader respond to the analyst's message
-        # trader_response = analysis_result.chat_history[-1]['content']
-        
-        # Parse multiple orders from trader's response
         orders = []
-        for order_line in trader_response.strip().split('\n'):
-            if order_line and not order_line.upper() == 'TERMINATE':
-                try:
-                    item, details = order_line.split(": ")
-                    action, price, quantity = details.split("|")
-                    
-                    orders.append(Order(
-                        #id=f"{self.team_name}-{uuid.uuid4()}",
-                        id=f"{self.team_name}",
-                        security=item,
-                        price=float(price),
-                        quantity=int(quantity),
-                        isBuy=(action.upper() == "BUY"),
-                        timestamp=current_tick
-                    ))
-                except:
-                    orders.append(Order(
-                        id="NONE",
-                        security="NONE",
-                        price=0,
-                        quantity=0,
-                        isBuy=True,
-                        timestamp=0
-                    ))
+
+        if not portolio_securities or type_order == 'BUY':
+            orders.append(Order(
+                id=self.team_name,
+                security=res,
+                price=quotes.orderBooks[res].sellHeap[0][0],
+                quantity=1,
+                isBuy=True,
+                timestamp=current_tick
+            ))
+        elif type_order == 'SELL':
+            orders.append(Order(
+                id=self.team_name,
+                security=res,
+                price=quotes.orderBooks[res].buyHeap[0][0],
+                quantity=1,
+                isBuy=False,
+                timestamp=current_tick
+            ))
+        
         
         return orders
 

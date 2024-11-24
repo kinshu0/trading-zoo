@@ -3,18 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-
-@dataclass
-class MarketEvent:
-    """Represents a market event that impacts security prices"""
-    name: str
-    time: int
-    severity: float  # -3 to +3
-    affected_volatilities: List[str]
-    
-    def __str__(self):
-        direction = "positive" if self.severity > 0 else "negative"
-        return f"{self.name} ({direction} impact)"
+from bases import MarketEvent
 
 def generate_random_event() -> MarketEvent:
     """Generates a random market event"""
@@ -35,7 +24,7 @@ def generate_random_event() -> MarketEvent:
         affected_volatilities=affected
     )
 
-class security:
+class security_manager:
     '''
     class that encapsulates the actions of a security, with ability to generate the next price
     '''
@@ -113,9 +102,9 @@ def test_securities(num_iterations: int = 100, event_probability: float = 0.03):
         event_probability: Probability of an event occurring at each time step
     """
     securities = [
-        security("Calm Stock", "calm"),
-        security("Medium Stock", "medium"),
-        security("Volatile Stock", "volatile")
+        security_manager("Calm Stock", "calm"),
+        security_manager("Medium Stock", "medium"),
+        security_manager("Volatile Stock", "volatile")
     ]
     
     # Track events for plotting

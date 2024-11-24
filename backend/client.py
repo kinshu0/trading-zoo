@@ -3,18 +3,13 @@ from dotenv import load_dotenv
 load_dotenv()
 from dataclasses import dataclass
 from typing import List
+from bases import security_details, MarketInfo, Order
 
 from autogen import ConversableAgent
 from dataclasses import dataclass
 from typing import Dict, List
 import time
 import uuid
-from model import Order
-
-@dataclass
-class security_description:
-    security_name : str
-    quantity : int
 
 config_list = [
     {
@@ -29,10 +24,6 @@ config_list = [
     }
 ]
 
-@dataclass
-class MarketInfo:
-    story: str
-    orderbook: str
 
 # Analyst agent that solves riddles and analyzes market information
 analyst = ConversableAgent(
@@ -83,8 +74,11 @@ class TradingClient:
         self.team_name = team_name
         self.analyst = analyst
         self.trader = trader
-        self.portfolio : List[security_description] = [] 
+        self.portfolio : List[security_details] = [] 
         self.balance_available = starting_balance
+    
+    def get_portfolio_valuation(self):
+        return sum([sec.price * sec.quantity for sec in self.portfolio]) + self.balance_available
         
     def get_quote(self, market_info: dict[str, MarketInfo], current_tick : int) -> List[Order]:
         """
@@ -124,7 +118,8 @@ class TradingClient:
                 action, price, quantity = details.split("|")
                 
                 orders.append(Order(
-                    id=f"{self.team_name}-{uuid.uuid4()}",
+                    #id=f"{self.team_name}-{uuid.uuid4()}",
+                    id=f"{self.team_name}",
                     security=item,
                     price=float(price),
                     quantity=int(quantity),

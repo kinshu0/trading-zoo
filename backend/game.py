@@ -1,13 +1,20 @@
-from flask import Flask, Response 
+from flask import Flask, Response
 from client import TradingClient
 from model import GameOrderBook
 from dataclasses import dataclass
 from security import security_manager 
 from bases import security_description, security_details, event, MarketInfo, full_portfolio
 import random
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app, 
+     resources={r"/*": {
+         "origins": ["http://localhost:3000"],
+         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         "allow_headers": ["Content-Type", "Authorization"],
+         "supports_credentials": True  # Add this line
+     }})
 game_started = False
 current_tick = 0
 event_timeline = []

@@ -6,6 +6,9 @@ A Playful Market Simulation Game
 
 Trading Zoo is a whimsical trading simulation game that brings the world of finance to life through anthropomorphized animal teams. Set in a jungle-themed environment, the game features various animal species as sophisticated trading teams, each with their own specialties and trading strategies.
 
+![image](https://github.com/user-attachments/assets/7a848a97-3c52-4520-bc62-c28f1d0a0e13)
+
+
 ## Core Concept
 
 Players can observe and interact with a vibrant marketplace where animal teams trade exotic goods in real-time. The game combines educational aspects of market dynamics with playful, jungle-themed elements.

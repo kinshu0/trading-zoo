@@ -1,8 +1,9 @@
 from flask import Flask, Response 
-from client import TradingClient, MarketInfo, security_description as security_created_desc
-from model import event, GameOrderBook
+from client import TradingClient
+from model import GameOrderBook
 from dataclasses import dataclass
-from security import security as security_seq
+from security import security_manager 
+from bases import security_description, security_details, event, MarketInfo
 import random
 
 app = Flask(__name__)
@@ -12,12 +13,8 @@ current_tick = 0
 event_timeline = []
 news_feed = []
 securities_descriptions = []
-
-@dataclass
-class security_description:
-    name : str
-    story : str
-    price : int
+completed_transactions = []
+pending_transactions = []
 
 clients = dict()
 
@@ -76,7 +73,7 @@ def start():
     securities_sequences = []
 
     for security in securities_descriptions:
-        securities_sequences.append(security_seq(name = security.name, volatility=random.choice(["calm", "medium", "volatile"]), start=security.price))
+        securities_sequences.append(security_manager(name = security.name, volatility=random.choice(["calm", "medium", "volatile"]), start=security.price))
 
     quotes = GameOrderBook(securities = [security.name for security in securities_descriptions])
 
@@ -155,14 +152,12 @@ def tick():
                             resolved_b = True
 
                     if not resolved_b:
-                        client.portfolio.append(security_created_desc(security_name=resolved_security, quantity=record.quantity, price=record.price))
+                        client.portfolio.append(security_details(security_name=resolved_security, quantity=record.quantity, price=record.price))
                             
 
     current_tick += 1
 
     for security in securities_descriptions:
-        #             orderbook="Bid: 30(300), 29(500)\nAsk: 31(200), 32(400)"
-
         for security_seq_obj in securities_sequences:
             if security_seq_obj.name == security.name:
                 severity = 0

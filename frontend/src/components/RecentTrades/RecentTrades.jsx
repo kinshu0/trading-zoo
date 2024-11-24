@@ -1,68 +1,58 @@
 import React, { useState, useEffect } from 'react'
 import { ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import api from '../../services/api'
 
 function RecentTrades() {
-  const [trades, setTrades] = useState([
-    {
-      id: 1, team: 'Penguins', action: 'buy',
-      stock: 'FISH', amount: 100, price: 150.25,
-      timestamp: '2 min ago'
-    },
-    {
-      id: 2, team: 'Monkeys', action: 'sell',
-      stock: 'BNNA', amount: 50, price: 85.75,
-      timestamp: '5 min ago'
-    },
-    {
-      id: 3, team: 'Foxes', action: 'buy',
-      stock: 'PEBB', amount: 75, price: 45.30,
-      timestamp: '8 min ago'
-    }
-  ])
+  const [trades, setTrades] = useState([])
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const newTrade = generateRandomTrade()
-      setTrades(prev => [newTrade, ...prev.slice(0, 4)])
-    }, 5000)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  const generateRandomTrade = () => {
-    const teams = ['Penguins', 'Monkeys', 'Foxes', 'Iguanas']
-    const stocks = ['BNNA', 'ICEE', 'PINE', 'FISH', 'PEBB']
-    const actions = ['buy', 'sell']
-
-    return {
-      id: Date.now(),
-      team: teams[Math.floor(Math.random() * teams.length)],
-      action: actions[Math.floor(Math.random() * actions.length)],
-      stock: stocks[Math.floor(Math.random() * stocks.length)],
-      amount: Math.floor(Math.random() * 100) + 10,
-      price: Math.floor(Math.random() * 200) + 50,
-      timestamp: 'just now'
+  const fetchTrades = async () => {
+    try {
+      const response = await api.get('/completed_transactions')
+      if (response.data) {
+        const formattedTrades = response.data.map(trade => ({
+          id: `${trade.timestamp}-${trade.buyer}-${trade.seller}`,
+          buyerTeam: trade.buyer,
+          sellerTeam: trade.seller,
+          stock: trade.security,
+          amount: trade.quantity,
+          price: trade.price,
+          timestamp: new Date(trade.timestamp * 1000).toLocaleTimeString()
+        }))
+        setTrades(formattedTrades.slice(-4).reverse()) // Keep last 5 trades
+      }
+    } catch (error) {
+      console.error('Failed to fetch trades:', error)
     }
   }
+
+  useEffect(() => {
+    fetchTrades()
+    const interval = setInterval(fetchTrades, 2000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="space-y-1 p-1">
       {trades.map(trade => (
         <div key={trade.id} className="bg-gray-50 rounded p-1.5 text-xs">
-          <div className="flex justify-between items-center">
-            <span className="font-medium">{trade.team}</span>
+          {/* Buyer's trade */}
+          <div className="flex justify-between items-center mb-0.5">
+            <span className="font-medium">{trade.buyerTeam}</span>
             <div className="flex items-center gap-0.5">
-              {trade.action === 'buy' ? 
-                <ArrowUpRight className="w-3 h-3 text-green-600" /> : 
-                <ArrowDownRight className="w-3 h-3 text-red-600" />
-              }
-              <span className={trade.action === 'buy' ? 'text-green-600' : 'text-red-600'}>
-                {trade.action.toUpperCase()}
-              </span>
+              <ArrowUpRight className="w-3 h-3 text-green-600" />
+              <span className="text-green-600">BUY</span>
+            </div>
+          </div>
+          {/* Seller's trade */}
+          <div className="flex justify-between items-center">
+            <span className="font-medium">{trade.sellerTeam}</span>
+            <div className="flex items-center gap-0.5">
+              <ArrowDownRight className="w-3 h-3 text-red-600" />
+              <span className="text-red-600">SELL</span>
             </div>
           </div>
           <div className="text-gray-600 mt-0.5 flex justify-between">
-            <span>{trade.amount} {trade.stock} @ JC{trade.price}</span>
+            <span>{trade.amount} {trade.stock} @ JC{trade.price.toFixed(2)}</span>
             <span className="text-gray-400">{trade.timestamp}</span>
           </div>
         </div>

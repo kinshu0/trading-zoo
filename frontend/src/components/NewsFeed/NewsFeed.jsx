@@ -1,58 +1,62 @@
 import React, { useState, useEffect } from 'react'
-import { Clock } from 'lucide-react'
+import { Clock, ChevronDown, ChevronUp } from 'lucide-react'
+import api from '../../services/api'
 
 function NewsFeed({ onNewsUpdate }) {
   const [news, setNews] = useState([])
+  const [isExpanded, setIsExpanded] = useState(false)
 
-  const generateNews = () => {
-    const stocks = ['BNNA', 'ICEE', 'PINE', 'PEBB', 'FISH']
-    const events = [
-      { type: 'positive', multiplier: 1.05, templates: [
-        'Increased demand for {stock}',
-        'New market opens for {stock}',
-        'Positive forecast for {stock}'
-      ]},
-      { type: 'negative', multiplier: 0.95, templates: [
-        'Supply chain issues affect {stock}',
-        'Decreased demand for {stock}',
-        'Market concerns over {stock}'
-      ]},
-      { type: 'neutral', multiplier: 1, templates: [
-        'Market analysis: {stock} stable',
-        'New regulations for {stock}',
-        'Industry review of {stock}'
-      ]}
-    ]
+  const getImpactType = (severity) => {
+    if (severity > 0) return 'positive'
+    if (severity < 0) return 'negative'
+    return 'neutral'
+  }
 
-    const stock = stocks[Math.floor(Math.random() * stocks.length)]
-    const event = events[Math.floor(Math.random() * events.length)]
-    const template = event.templates[Math.floor(Math.random() * event.templates.length)]
-    const title = template.replace('{stock}', stock)
-
-    return {
-      id: Date.now(),
-      title,
-      timestamp: 'just now',
-      impact: event.type,
-      stock,
-      multiplier: event.multiplier,
-      description: `Market analysts report ${title.toLowerCase()} affecting trading patterns...`
+  const fetchEvents = async () => {
+    try {
+      const response = await api.get('/isEvent')
+      if (response.data && response.data.length > 0) {
+        const formattedNews = response.data.map(event => ({
+          id: Date.now() + Math.random(),
+          title: event,
+          timestamp: new Date().toLocaleTimeString(),
+          impact: getImpactType(1),
+          description: event
+        }))
+        setNews(formattedNews)
+      }
+    } catch (error) {
+      console.error('Failed to fetch events:', error)
     }
   }
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const newNewsItem = generateNews()
-      setNews(prev => [newNewsItem, ...prev.slice(0, 4)])
-      onNewsUpdate(newNewsItem.stock, newNewsItem.multiplier)
-    }, 8000)
-
+    fetchEvents()
+    const interval = setInterval(fetchEvents, 2000)
     return () => clearInterval(interval)
-  }, [onNewsUpdate])
+  }, [])
+
+  const displayedNews = isExpanded ? news : news.slice(-5)
 
   return (
     <div className="space-y-1 p-1">
-      {news.map(item => (
+      <div className="flex justify-between items-center px-1 mb-1">
+        <span className="text-xs text-gray-500">
+          {isExpanded ? 'All Events' : 'Recent Events'}
+        </span>
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          {isExpanded ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
+        </button>
+      </div>
+      
+      {displayedNews.map(item => (
         <div key={item.id} 
           className={`rounded p-1.5 text-xs ${
             item.impact === 'positive' ? 'bg-green-50' :

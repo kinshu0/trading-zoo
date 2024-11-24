@@ -4,28 +4,23 @@ import { Statistic, Tag, Typography } from 'antd'
 const { Text } = Typography
 
 function TeamPortfolios({ data }) {
-  // Early return if no data
   if (!data) return null
 
-  // Convert the data object into an array
   const teams = Object.entries(data).map(([teamName, teamData]) => {
-    // Calculate total portfolio value
-    const portfolioValue = teamData.portfolio.reduce((total, holding) => {
+    const activeHoldings = teamData.portfolio.filter(holding => holding.quantity > 0)
+
+    const portfolioValue = activeHoldings.reduce((total, holding) => {
       return total + (holding.quantity * holding.price)
     }, 0)
 
-    // Calculate total portfolio value including cash
     const totalValue = portfolioValue + teamData.balance
-
-    // For this example, we'll use a mock change value
-    // In a real app, you'd want to track historical values to calculate actual change
-    const change = ((totalValue - 100) / 100) * 100 // Assuming 100 was starting balance
+    const change = ((totalValue - 100) / 100) * 100
 
     return {
       name: teamName,
       value: totalValue,
       change: parseFloat(change.toFixed(1)),
-      holdings: teamData.portfolio.map(holding => ({
+      holdings: activeHoldings.map(holding => ({
         stock: holding.security_name,
         shares: holding.quantity
       }))

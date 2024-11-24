@@ -58,32 +58,37 @@ function GameScreen() {
 
   const fetchGameData = async () => {
     try {
-      await api.get('/tick'); // Tick the game first
+      await api.get('/tick')
       
       // Fetch all data in parallel
-      const [securitiesRes, clientsRes, completedTxRes, pendingTxRes] = await Promise.all([
+      const [securitiesRes, clientsRes, completedTxRes, pendingTxRes, eventRes, valuationHistoryRes] = await Promise.all([
         api.get('/securities'),
         api.get('/clients'),
         api.get('/completed_transactions'),
-        api.get('/pending_transactions')
-      ]);
+        api.get('/pending_transactions'),
+        api.get('/isEvent'),
+        api.get('/valuation_history')
+      ])
 
-      setSecurities(securitiesRes.data);
-      setClients(clientsRes.data);
+      setSecurities(securitiesRes.data)
+      setClients(clientsRes.data)
       setTransactions({
         completed: completedTxRes.data,
         pending: pendingTxRes.data
-      });
+      })
 
-      // Wait 2 seconds before next tick
-      setTimeout(fetchGameData, 2000);
+      // If there's an event, pass it to the NewsFeed
+      if (eventRes.data && eventRes.data !== '') {
+        handleNewsImpact(eventRes.data)
+      }
+
+      setTimeout(fetchGameData, 6000)
     } catch (error) {
-      console.error('Failed to fetch game data:', error);
-      toast.error('Failed to fetch game data');
-      // If there's an error, wait 5 seconds before retrying
-      setTimeout(fetchGameData, 5000);
+      console.error('Failed to fetch game data:', error)
+      toast.error('Failed to fetch game data')
+      setTimeout(fetchGameData, 6000)
     }
-  };
+  }
 
   const startGame = async () => {
     if (isStarting) return

@@ -11,8 +11,8 @@ export const events = [
   },
   {
     name: "Tropical Storm",
-    description: "A massive storm increases the need for umbrellas!",
-    effect: { asset: "Umbrellas", multiplier: 1.8 }
+    description: "A massive storm disrupts fishing operations, causing fish prices to rise!",
+    effect: { asset: "Fish", multiplier: 1.8 }
   },
   {
     name: "Pineapple Shortage",
@@ -21,8 +21,8 @@ export const events = [
   },
   {
     name: "Underwater Tourism Boom",
-    description: "A surge in underwater tourism increases demand for scuba gear!",
-    effect: { asset: "Scuba Gear", multiplier: 2.2 }
+    description: "A surge in underwater tourism increases demand for rare pebbles!",
+    effect: { asset: "Pebbles", multiplier: 2.2 }
   }
 ];
 

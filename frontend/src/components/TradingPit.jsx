@@ -8,8 +8,8 @@ const initialPrices = {
   Bananas: 10,
   Ice: 15,
   Pineapples: 20,
-  Umbrellas: 25,
-  'Scuba Gear': 50
+  Fish: 25,
+  Pebbles: 50
 };
 
 const teams = ['Monkeys', 'Penguins', 'Foxes', 'Iguanas'];
@@ -21,12 +21,12 @@ const teamColors = {
 };
 
 function generateTrade() {
-  const buyer = teams[Math.floor(Math.random() * teams.length)];
-  const seller = teams[Math.floor(Math.random() * teams.length)];
-  const asset = Object.keys(initialPrices)[Math.floor(Math.random() * Object.keys(initialPrices).length)];
-  const quantity = Math.floor(Math.random() * 10) + 1;
-  const price = initialPrices[asset] * (1 + (Math.random() - 0.5) * 0.1);
-  return { buyer, seller, asset, quantity, price };
+  const team = teams[Math.floor(Math.random() * teams.length)]
+  const asset = Object.keys(initialPrices)[Math.floor(Math.random() * Object.keys(initialPrices).length)]
+  const quantity = Math.floor(Math.random() * 10) + 1
+  const price = initialPrices[asset] * (1 + (Math.random() - 0.5) * 0.1)
+  const type = Math.random() > 0.5 ? 'buy' : 'sell'
+  return { team, asset, quantity, price, type }
 }
 
 const TradingPit = () => {
@@ -48,9 +48,10 @@ const TradingPit = () => {
   const [eventHistory, setEventHistory] = useState([]);
 
   const addTrade = () => {
-    const trade = generateTrade();
-    const newMessage = `${trade.buyer} bought ${trade.quantity} ${trade.asset} from ${trade.seller} for ${trade.price.toFixed(2)} Jungle Coins each!`;
-    setMessages(prevMessages => [newMessage, ...prevMessages.slice(0, 4)]);
+    const trade = generateTrade()
+    const action = trade.type === 'buy' ? 'bought' : 'sold'
+    const newMessage = `${trade.team} ${action} ${trade.quantity} ${trade.asset} at ${trade.price.toFixed(2)} Jungle Coins each!`
+    setMessages(prevMessages => [newMessage, ...prevMessages.slice(0, 4)])
     
     setPrices(prevPrices => {
       const newPrices = { ...prevPrices };
@@ -59,11 +60,11 @@ const TradingPit = () => {
     });
 
     setTeamBalances(prevBalances => {
-      const newBalances = { ...prevBalances };
-      newBalances[trade.buyer] -= trade.quantity * trade.price;
-      newBalances[trade.seller] += trade.quantity * trade.price;
-      return newBalances;
-    });
+      const newBalances = { ...prevBalances }
+      const totalCost = trade.quantity * trade.price
+      newBalances[trade.team] += trade.type === 'sell' ? totalCost : -totalCost
+      return newBalances
+    })
 
     setGraphData(prevData => {
       const newData = { ...prevData };
@@ -81,9 +82,8 @@ const TradingPit = () => {
 
     setTradeHistory(prevHistory => ({
       ...prevHistory,
-      [trade.buyer]: [...prevHistory[trade.buyer], { ...trade, type: 'buy' }],
-      [trade.seller]: [...prevHistory[trade.seller], { ...trade, type: 'sell' }],
-    }));
+      [trade.team]: [...prevHistory[trade.team], trade],
+    }))
   };
 
   const triggerEvent = () => {

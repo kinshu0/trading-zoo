@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LineChart, Newspaper, History, Briefcase, Maximize2, Minimize2 } from 'lucide-react'
 import Header from '../components/Header'
@@ -7,10 +7,16 @@ import StockPrices from '../components/StockPrices/StockPrices'
 import NewsFeed from '../components/NewsFeed/NewsFeed'
 import RecentTrades from '../components/RecentTrades/RecentTrades'
 import TeamPortfolios from '../components/TeamPortfolios/TeamPortfolios'
+import { toast } from 'react-toastify';
+import api from '../services/api'
 
 function GameScreen() {
   const [expandedComponent, setExpandedComponent] = useState(null)
   const [stockPriceRef, setStockPriceRef] = useState(null)
+  const [gameStarted, setGameStarted] = useState(false)
+  const [securities, setSecurities] = useState({})
+  const [clients, setClients] = useState({})
+  const [transactions, setTransactions] = useState({ completed: [], pending: [] })
 
   const handleNewsImpact = (ticker, multiplier) => {
     if (stockPriceRef) {
@@ -48,68 +54,79 @@ function GameScreen() {
     )
   }
 
+  const fetchGameData = async () => {
+    try {
+      await api.get('/tick'); // Tick the game first
+      
+      // Fetch all data in parallel
+      const [securitiesRes, clientsRes, completedTxRes, pendingTxRes] = await Promise.all([
+        api.get('/securities'),
+        api.get('/clients'),
+        api.get('/completed_transactions'),
+        api.get('/pending_transactions')
+      ]);
+
+      setSecurities(securitiesRes.data);
+      setClients(clientsRes.data);
+      setTransactions({
+        completed: completedTxRes.data,
+        pending: pendingTxRes.data
+      });
+
+      // Wait 2 seconds before next tick
+      setTimeout(fetchGameData, 2000);
+    } catch (error) {
+      console.error('Failed to fetch game data:', error);
+      toast.error('Failed to fetch game data');
+      // If there's an error, wait 5 seconds before retrying
+      setTimeout(fetchGameData, 5000);
+    }
+  };
+
+  const startGame = async () => {
+    try {
+      await api.get('/start');
+      setGameStarted(true);
+      // Start the first tick after game starts
+      fetchGameData();
+    } catch (error) {
+      console.error('Failed to start game:', error);
+      toast.error('Failed to start game');
+    }
+  };
+
+  useEffect(() => {
+    startGame();
+    // No need for interval cleanup since we're using recursive setTimeout
+  }, []);
+
   return (
     <div className="h-screen flex flex-col">
       <Header />
       <div className="flex-1 bg-gradient-to-br from-green-50 to-green-100 p-2">
         <div className="grid grid-cols-12 gap-2">
-          {/* Left Sidebar */}
-          <motion.div 
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            className="col-span-3 flex flex-col gap-2"
-          >
-            <ComponentWrapper 
-              title="Team Portfolios" 
-              icon={Briefcase}
-              name="portfolios"
-            >
-              <TeamPortfolios />
+          <motion.div className="col-span-3 flex flex-col gap-2">
+            <ComponentWrapper title="Team Portfolios" icon={Briefcase} name="portfolios">
+              <TeamPortfolios data={clients} />
             </ComponentWrapper>
             
-            <ComponentWrapper 
-              title="Stock Prices" 
-              icon={LineChart}
-              name="stocks"
-            >
-              <StockPrices ref={setStockPriceRef} />
+            <ComponentWrapper title="Stock Prices" icon={LineChart} name="stocks">
+              <StockPrices data={securities} ref={setStockPriceRef} />
             </ComponentWrapper>
           </motion.div>
 
-          {/* Main Content */}
-          <motion.div 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="col-span-6"
-          >
-            <ComponentWrapper 
-              title="Market Performance" 
-              icon={LineChart}
-              name="market"
-            >
+          <motion.div className="col-span-6">
+            <ComponentWrapper title="Market Performance" icon={LineChart} name="market">
               <GameTradingPit />
             </ComponentWrapper>
           </motion.div>
 
-          {/* Right Sidebar */}
-          <motion.div 
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            className="col-span-3 flex flex-col gap-2"
-          >
-            <ComponentWrapper 
-              title="Jungle News" 
-              icon={Newspaper}
-              name="news"
-            >
+          <motion.div className="col-span-3 flex flex-col gap-2">
+            <ComponentWrapper title="Jungle News" icon={Newspaper} name="news">
               <NewsFeed onNewsUpdate={handleNewsImpact} />
             </ComponentWrapper>
 
-            <ComponentWrapper 
-              title="Recent Trades" 
-              icon={History}
-              name="trades"
-            >
+            <ComponentWrapper title="Recent Trades" icon={History} name="trades">
               <RecentTrades />
             </ComponentWrapper>
           </motion.div>

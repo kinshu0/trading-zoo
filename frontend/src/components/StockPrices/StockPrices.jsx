@@ -6,8 +6,8 @@ function StockPrices() {
     { name: 'Bananas', ticker: 'BNNA', price: 10.00, change: 0, icon: '🍌' },
     { name: 'Ice', ticker: 'ICEE', price: 15.00, change: 0, icon: '🧊' },
     { name: 'Pineapples', ticker: 'PINE', price: 20.00, change: 0, icon: '🍍' },
-    { name: 'Umbrellas', ticker: 'UMBR', price: 25.00, change: 0, icon: '☂️' },
-    { name: 'Scuba Gear', ticker: 'SCBA', price: 50.00, change: 0, icon: '🤿' }
+    { name: 'Fish', ticker: 'FISH', price: 25.00, change: 0, icon: '🐟' },
+    { name: 'Pebbles', ticker: 'PEBB', price: 50.00, change: 0, icon: '🪨' }
   ])
 
   // Small random fluctuations

@@ -16,8 +16,8 @@ Tradable Assets:
 - Bananas 🍌 - A staple commodity
 - Ice 🧊 - Temperature-sensitive luxury good
 - Pineapples 🍍 - Exotic fruit commodity
-- Umbrellas ☂️ - Weather protection equipment
-- Scuba Gear 🤿 - Specialized equipment
+- Fish 🐟 - For the best sushi
+- Pebbles � - Beach treasure
 
 Game Features:
 - Real-time trading simulation

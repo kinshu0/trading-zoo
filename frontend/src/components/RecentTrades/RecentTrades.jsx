@@ -5,17 +5,17 @@ function RecentTrades() {
   const [trades, setTrades] = useState([
     {
       id: 1, team: 'Penguins', action: 'buy',
-      stock: 'BNNA', amount: 100, price: 150.25,
+      stock: 'FISH', amount: 100, price: 150.25,
       timestamp: '2 min ago'
     },
     {
       id: 2, team: 'Monkeys', action: 'sell',
-      stock: 'COCO', amount: 50, price: 85.75,
+      stock: 'BNNA', amount: 50, price: 85.75,
       timestamp: '5 min ago'
     },
     {
       id: 3, team: 'Foxes', action: 'buy',
-      stock: 'LEAF', amount: 75, price: 45.30,
+      stock: 'PEBB', amount: 75, price: 45.30,
       timestamp: '8 min ago'
     }
   ])
@@ -31,7 +31,7 @@ function RecentTrades() {
 
   const generateRandomTrade = () => {
     const teams = ['Penguins', 'Monkeys', 'Foxes', 'Iguanas']
-    const stocks = ['BNNA', 'ICEE', 'PINE', 'UMBR', 'SCBA']
+    const stocks = ['BNNA', 'ICEE', 'PINE', 'FISH', 'PEBB']
     const actions = ['buy', 'sell']
 
     return {

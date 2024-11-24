@@ -7,19 +7,19 @@ function TeamPortfolios() {
   const teams = [
     {
       name: 'Penguins', value: 125000, change: 5.2,
-      holdings: [{ stock: 'BNNA', shares: 100 }, { stock: 'COCO', shares: 150 }]
+      holdings: [{ stock: 'BNNA', shares: 100 }, { stock: 'PEBB', shares: 150 }]
     },
     {
       name: 'Monkeys', value: 115000, change: -2.1,
-      holdings: [{ stock: 'LEAF', shares: 200 }, { stock: 'VINE', shares: 75 }]
+      holdings: [{ stock: 'FISH', shares: 200 }, { stock: 'PEBB', shares: 75 }]
     },
     {
       name: 'Foxes', value: 135000, change: 7.5,
-      holdings: [{ stock: 'BNNA', shares: 150 }, { stock: 'LEAF', shares: 100 }]
+      holdings: [{ stock: 'BNNA', shares: 150 }, { stock: 'FISH', shares: 100 }]
     },
     {
       name: 'Iguanas', value: 118000, change: 1.8,
-      holdings: [{ stock: 'COCO', shares: 125 }, { stock: 'VINE', shares: 100 }]
+      holdings: [{ stock: 'BNNA', shares: 125 }, { stock: 'PINE', shares: 100 }]
     }
   ]
 

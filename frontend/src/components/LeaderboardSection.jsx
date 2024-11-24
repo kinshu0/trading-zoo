@@ -3,8 +3,8 @@ import React from 'react';
 const mockLeaderboard = [
   { rank: 1, team: 'Monkeys', icon: '🐒', balance: 10000, topAsset: 'Bananas' },
   { rank: 2, team: 'Penguins', icon: '🐧', balance: 8500, topAsset: 'Ice' },
-  { rank: 3, team: 'Foxes', icon: '🦊', balance: 7200, topAsset: 'Scuba Gear' },
-  { rank: 4, team: 'Iguanas', icon: '🦎', balance: 6800, topAsset: 'Umbrellas' },
+  { rank: 3, team: 'Foxes', icon: '🦊', balance: 7200, topAsset: 'Fish' },
+  { rank: 4, team: 'Iguanas', icon: '🦎', balance: 6800, topAsset: 'Pebbles' },
 ];
 
 const LeaderboardSection = () => {

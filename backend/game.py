@@ -3,7 +3,7 @@ from client import TradingClient
 from model import GameOrderBook
 from dataclasses import dataclass
 from security import security_manager 
-from bases import security_description, security_details, event, MarketInfo
+from bases import security_description, security_details, event, MarketInfo, full_portfolio
 import random
 
 app = Flask(__name__)
@@ -38,11 +38,15 @@ def register_client(name):
 
 @app.route("/clients")
 def get_clients():
-    return clients
+    return {client.team_name : full_portfolio(portfolio=client.portfolio, balance=client.balance_available) for client in clients}
 
 @app.route("/client/<string:name>")
 def get_client_by_name(name):
     return clients[name].get_name()
+
+@app.route("/securities")
+def get_securities():
+    return {sec.name : sec.price for sec in securities_descriptions}
 
 @app.route("/start")
 def start():
@@ -109,12 +113,7 @@ def tick():
 
     current_market_info = dict()
 
-    security_name_and_price = dict()
-
-    for security in securities_descriptions:
-        security_name_and_price[security.name] = security.price
-
-    quotes.update_market_maker_orders(security_prices = security_name_and_price, timestamp=current_tick)
+    quotes.update_market_maker_orders(security_prices = {security.name : security.price for security in securities_descriptions}, timestamp=current_tick)
 
     #print('-' * 200, 'START')
 

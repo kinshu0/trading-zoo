@@ -22,7 +22,7 @@ news_feed = []
 securities_descriptions = []
 completed_transactions = []
 pending_transactions = []
-lastEvent = ""
+lastEvents = []
 
 clients = dict()
 
@@ -159,11 +159,11 @@ def get_pending_transactions():
 
 @app.route("/isEvent")
 def is_event():
-    return lastEvent
+    return lastEvents
 
 @app.route("/tick")
 def tick():
-    global game_started, current_tick, clients, event_timeline, news_feed, securities_descriptions, quotes, securities_sequences, completed_transactions, pending_transactions, lastEvent
+    global game_started, current_tick, clients, event_timeline, news_feed, securities_descriptions, quotes, securities_sequences, completed_transactions, pending_transactions, lastEvents
 
     if not game_started:
         return ("Game has not started", 403)
@@ -257,9 +257,7 @@ def tick():
         random_event_index = random.randint(0, len(event_timeline)-1)
         event_desc, sev, affected = event_timeline.pop(random_event_index)
         severity = sev
-        lastEvent = event_desc
-    else:
-        lastEvent = ""
+        lastEvents.append(event_desc)
 
     for security in securities_descriptions:
         for security_seq_obj in securities_sequences:

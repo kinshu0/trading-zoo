@@ -89,7 +89,7 @@ class TradingClient:
 
         orders = []
 
-        if res not in securities:
+        if (res not in securities and type_order == 'BUY') or (res not in portolio_securities and type_order == 'SELL'):
             orders.append(Order(
                 id='NONE',
                 security=res,

@@ -243,12 +243,16 @@ def tick():
     current_tick += 1
     
     severity = 0
+
+    affected = []
+    sev = 0
+    event_desc = ""
+
     if random.random() < 0.2 and len(event_timeline) > 0:  # 1/5 chance
         random_event_index = random.randint(0, len(event_timeline)-1)
         event_desc, sev, affected = event_timeline.pop(random_event_index)
-        if security.name in affected:
-            severity = sev
-            lastEvent = event_desc
+        severity = sev
+        lastEvent = event_desc
 
     for security in securities_descriptions:
         for security_seq_obj in securities_sequences:
@@ -256,10 +260,6 @@ def tick():
                 
                 if security.name in affected:
                     security.price = security_seq_obj.generateNextPrice(severity)
-
-    for event in event_timeline:
-        if event.tick_start == current_tick:
-            news_feed.append(event.event_description)
 
     return f"{current_tick}"
 

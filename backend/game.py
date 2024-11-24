@@ -149,6 +149,10 @@ def get_valuation(name):
 def get_completed_transcations():
     return completed_transactions
 
+@app.route("/valuation_history")
+def get_valuation_history():
+    return {client.team_name : client.valuation_history for client in clients}
+
 @app.route("/pending_transactions")
 def get_pending_transactions():
     return pending_transactions
@@ -254,6 +258,8 @@ def tick():
         event_desc, sev, affected = event_timeline.pop(random_event_index)
         severity = sev
         lastEvent = event_desc
+    else:
+        lastEvent = ""
 
     for security in securities_descriptions:
         for security_seq_obj in securities_sequences:
@@ -261,6 +267,9 @@ def tick():
                 
                 if security.name in affected:
                     security.price = security_seq_obj.generateNextPrice(severity)
+
+    for client in clients:
+        client.valuation_history.append(client.get_portfolio_valuation())
 
     return f"{current_tick}"
 

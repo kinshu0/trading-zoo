@@ -49,6 +49,7 @@ class TradingClient:
 
         self.portfolio : List[security_details] = [] 
         self.balance_available = starting_balance
+        self.valuation_history = []
     
     def get_portfolio_valuation(self):
         return sum([sec.price * sec.quantity for sec in self.portfolio]) + self.balance_available

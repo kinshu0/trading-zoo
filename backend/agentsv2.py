@@ -111,18 +111,13 @@ You must output orders in this exact JSON format:
 {
     "orders": [
         {
-            "type": "limit|market",
             "side": "buy|sell",
             "asset": string,
             "quantity": int,
             "price": float,
             "tick_validity": int
         }
-    ],
-    "position_management": {
-        "stop_loss_levels": {"asset_name": float},
-        "take_profit_levels": {"asset_name": float}
-    }
+    ]
 }
 
 Return 'TERMINATE' when orders are complete."""

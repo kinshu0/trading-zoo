@@ -44,6 +44,10 @@ def get_clients():
 def get_client_by_name(name):
     return clients[name].get_name()
 
+@app.route("/securities")
+def get_securities():
+    return {sec.name : sec.price for sec in securities_descriptions}
+
 @app.route("/start")
 def start():
     global game_started, event_timeline, quotes, securities_sequences, securities_descriptions, clients

@@ -203,3 +203,6 @@ def tick():
 @app.route("/")
 def root():
     return "OK"
+
+
+app.run(port=5000)

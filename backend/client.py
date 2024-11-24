@@ -13,15 +13,20 @@ import uuid
 
 config_list = [
     {
-        "model": "meta-llama/Meta-Llama-3.1-70B-Instruct",
-        "api_key": os.environ.get("NEBIUS_API_KEY"),
-        'base_url':"https://api.studio.nebius.ai/v1/"
-    },
-    {
         "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
         "api_key": os.environ.get("NEBIUS_API_KEY"),
         'base_url':"https://api.studio.nebius.ai/v1/"
-    }
+    },
+    # {
+    #     "model": "meta-llama/Meta-Llama-3.1-70B-Instruct-fast",
+    #     "api_key": os.environ.get("NEBIUS_API_KEY"),
+    #     'base_url':"https://api.studio.nebius.ai/v1/"
+    # },
+    # {
+    #     "model": "meta-llama/Meta-Llama-3.1-70B-Instruct",
+    #     "api_key": os.environ.get("NEBIUS_API_KEY"),
+    #     'base_url':"https://api.studio.nebius.ai/v1/"
+    # },
 ]
 
 BASE_PROMPT = """You are participating in a whimsical asset trading simulation with the following mechanics:
@@ -65,6 +70,19 @@ Rules to adhere to:
 2. You can't sell more than your current position
 """
 
+# ANALYST_ROLE = """As the team's Analyst, your role is to process news and market data into actionable recommendations.
+
+# For each analysis cycle, you should:
+# 1. Process news content for market impact (tick 1 only)
+# 2. Analyze orderbook patterns and trade history
+# 3. Consider team positions and performance
+# 4. Generate trading recommendations
+
+# Rules to adhere to:
+# 1. You can't buy more than your balance allows
+# 2. You can't sell more than your current position
+# """
+
 TRADER_ROLE = """As the team's Trader, your role is to execute trading recommendations from the Analyst into order formats.
 You must respond EXACTLY in this format with no other text:
 ITEM: ACTION|PRICE|QUANTITY
@@ -78,6 +96,24 @@ Price must be a number.
 Quantity must be a whole number.
 Return 'TERMINATE' when complete."""
 
+
+ANALYST_TRADER_ROLE = """Process market data and news content to make trading decisions, then output ONLY the order format below.
+
+Rules:
+1. Can't buy more than balance allows
+2. Can't sell more than current position
+
+Response must be EXACTLY in this format with no other text:
+ITEM: ACTION|PRICE|QUANTITY
+
+For multiple items, put each order on a new line:
+ICE: BUY|50|100
+FISH: SELL|30|200
+
+Only valid actions are BUY or SELL.
+Price must be a number.
+Quantity must be a whole number.
+Return 'TERMINATE' when complete."""
 
 agents = {
     "penguins": {
@@ -201,6 +237,9 @@ class TradingClient:
 
         trader_response = trader_result.chat_history[1]['content']
 
+        print(f'ANALYSIS REQUEST:\n{analysis_request}')
+        print(f'ANALYST RESPONSE:\n{analyst_response}')
+
         # analysis_result = self.analyst.initiate_chat(
         #     self.trader,
         #     message=analysis_request,
@@ -262,3 +301,5 @@ def test():
     orders = tc.get_quote(market_info, current_tick=1, portfolio=[], balance=100)
     for order in orders:
         print(order)
+
+# test()

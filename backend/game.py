@@ -6,6 +6,8 @@ from security import security_manager
 from bases import security_description, security_details, event, MarketInfo, full_portfolio
 import random
 from flask_cors import CORS
+from model import Order
+import json
 
 app = Flask(__name__)
 CORS(app, 
@@ -263,6 +265,26 @@ def tick():
                     security.price = security_seq_obj.generateNextPrice(severity)
 
     return f"{current_tick}"
+
+'''
+sample call: http://127.0.0.1:5000/add_order/hoomans/ICE/1.0/100/True
+'''
+
+@app.route("/add_order/<string:team_name>/<string:security>/<float:price>/<int:quantity>/<string:isBuy>")
+def add_order(team_name, security, price, quantity, isBuy):
+    isBuy = True if isBuy == "True" else False
+    o = Order(
+        id=team_name,
+        security=security,
+        price=price,
+        quantity=quantity,
+        isBuy=isBuy,
+        timestamp=current_tick
+    )
+
+    quotes.addOrder([o])
+
+    return "OK"
 
 @app.route("/")
 def root():

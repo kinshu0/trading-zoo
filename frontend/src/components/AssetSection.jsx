@@ -4,8 +4,8 @@ const assets = [
   { name: 'Bananas', icon: '🍌', description: 'A staple food for many', color: 'from-yellow-100 to-yellow-200' },
   { name: 'Ice', icon: '🧊', description: 'Essential for cool drinks', color: 'from-blue-100 to-blue-200' },
   { name: 'Pineapples', icon: '🍍', description: 'Tropical luxury fruit', color: 'from-yellow-200 to-green-100' },
-  { name: 'Umbrellas', icon: '☂️', description: 'Protection from sun and rain', color: 'from-purple-100 to-purple-200' },
-  { name: 'Scuba Gear', icon: '🤿', description: 'For underwater adventures', color: 'from-blue-200 to-green-100' },
+  { name: 'Fish', icon: '🐟', description: 'For the best sushi', color: 'from-purple-100 to-purple-200' },
+  { name: 'Pebbles', icon: '🪨', description: 'Beach treasure', color: 'from-blue-200 to-green-100' },
 ];
 
 const AssetSection = () => {

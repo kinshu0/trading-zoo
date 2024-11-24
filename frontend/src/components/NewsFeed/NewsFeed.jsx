@@ -5,7 +5,7 @@ function NewsFeed({ onNewsUpdate }) {
   const [news, setNews] = useState([])
 
   const generateNews = () => {
-    const stocks = ['BNNA', 'ICEE', 'PINE', 'UMBR', 'SCBA']
+    const stocks = ['BNNA', 'ICEE', 'PINE', 'PEBB', 'FISH']
     const events = [
       { type: 'positive', multiplier: 1.05, templates: [
         'Increased demand for {stock}',

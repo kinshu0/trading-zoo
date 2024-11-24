@@ -56,19 +56,30 @@ def start():
             TradingClient(team_name = "penguins", starting_balance = 100),
             TradingClient(team_name = "foxes", starting_balance = 100),
             TradingClient(team_name = "monkeys", starting_balance = 100),
+            TradingClient(team_name = "iguanas", starting_balance = 100),
             ]
 
     event_timeline = create_event_timeline()
 
     securities_descriptions = [
         security_description(name = "ICE",
-         story = "The sun's rays grow stronger each day, and whispers spread through the market of a great heat wave approaching. The cloud shepherds have been seen guiding their flocks far to the north, leaving the southern markets exposed to the sun's fierce embrace.",
+         story = "ice commodity",
          price = 1
          ),
-
-
         security_description(name = "FISH",
-         story = "A mysterious current has shifted in the deep waters, bringing schools of silver-scaled visitors to unusual waters. The wise seals speak of a great migration that happens once every blue moon, but the local fishing fleets seem oddly quiet about their recent catches.",
+         story = "fish commodity",
+         price = 1
+         ),
+        security_description(name = "BANANA",
+         story = "banana commodity",
+         price = 1
+         ),
+        security_description(name = "PEBBLE",
+         story = "pebble commodity",
+         price = 1
+         ),
+        security_description(name = "PINEAPPLES",
+         story = "pineapple commodity",
          price = 1
          )
 

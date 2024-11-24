@@ -12,6 +12,8 @@ Trading Zoo is a whimsical trading simulation game that brings the world of fina
 ## Core Concept
 
 Players can observe and interact with a vibrant marketplace where animal teams trade exotic goods in real-time. The game combines educational aspects of market dynamics with playful, jungle-themed elements.
+![image](https://github.com/user-attachments/assets/26be7083-b5fb-4074-b767-c5fefa96d7a7)
+
 
 ## Trading Teams
 
@@ -27,6 +29,9 @@ Players can observe and interact with a vibrant marketplace where animal teams t
 * **Pineapples** 🍍 - Exotic fruit commodity
 * **Fish** 🐟 - For the best sushi
 * **Pebbles** 💎 - Beach treasure
+
+![image](https://github.com/user-attachments/assets/b0dc73c5-0447-421f-abbe-d01f0caa4874)
+
 
 ## Game Features
 

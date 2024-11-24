@@ -15,15 +15,46 @@ news_feed = []
 securities_descriptions = []
 completed_transactions = []
 pending_transactions = []
+lastEvent = ""
 
 clients = dict()
 
 def create_event_timeline():
     # have a timeline generated
-    return [event(tick_start = 0, event_description = "event0", security_affected="FISH", event_severity=-1),
-            event(tick_start = 25, event_description = "event1", security_affected="ICE", event_severity=3),
-            # ...
-            ]
+    events = [
+        ("A massive ice storm hits the northern regions, increasing ice production", 2, ["ICE"]),
+        ("Devastating fish disease outbreak decimates populations", -3, ["FISH"]), 
+        ("Monkeys discover revolutionary banana harvesting technique", 3, ["BANANA"]),
+        ("Category 5 tropical storm ravages pineapple farms", -3, ["PINEAPPLE"]),
+        ("Minor shift in penguin migration affects fishing", -1, ["FISH", "ICE"]),
+        ("Breakthrough preservation technology for tropical fruits", 2, ["BANANA", "PINEAPPLE"]),
+        ("Coastal erosion impacts pebble quality", -1, ["PEBBLES"]),
+        ("Major volcanic eruption creates rare pebble deposits", 3, ["PEBBLES"]), 
+        ("Warming oceans disrupt fish breeding", -2, ["FISH"]),
+        ("Record cold temperatures boost ice production", 2, ["ICE"]),
+        ("Short-term banana worker strike", -1, ["BANANA"]),
+        ("New pebble enhancement process shows promise", 1, ["PEBBLES"]),
+        ("Massive fish school migration discovery", 2, ["FISH"]),
+        ("Severe drought threatens fruit harvests", -2, ["BANANA", "PINEAPPLE"]),
+        ("Revolutionary ice harvesting method unveiled", 3, ["ICE"]),
+        ("Arctic blast creates ideal ice conditions", 1, ["ICE"]),
+        ("Toxic algae bloom threatens fish stocks", -2, ["FISH"]),
+        ("Genetic breakthrough improves banana yield", 2, ["BANANA"]),
+        ("Pest infestation damages pineapple crops", -2, ["PINEAPPLE"]),
+        ("Changing ocean currents impact marine life", -1, ["FISH", "ICE"]),
+        ("AI-powered fruit ripening system developed", 1, ["BANANA", "PINEAPPLE"]),
+        ("Construction boom depletes pebble supplies", -2, ["PEBBLES"]),
+        ("Ancient premium pebble deposit discovered", 2, ["PEBBLES"]),
+        ("Overfishing crisis in key regions", -3, ["FISH"]),
+        ("New ice storage technology extends shelf life", 1, ["ICE"]),
+        ("Disease affects banana plantation yields", -2, ["BANANA"]),
+        ("International demand for premium pebbles soars", 2, ["PEBBLES"]),
+        ("Sustainable fishing practices boost populations", 1, ["FISH"]),
+        ("Extended dry season impacts fruit production", -1, ["BANANA", "PINEAPPLE"]),
+        ("Polar vortex creates ice surplus", 2, ["ICE"])
+    ]
+    
+    return events
 
 @app.route("/register/<string:name>")
 def register_client(name):
@@ -115,9 +146,13 @@ def get_completed_transcations():
 def get_pending_transactions():
     return pending_transactions
 
+@app.route("/isEvent")
+def is_event():
+    return lastEvent
+
 @app.route("/tick")
 def tick():
-    global game_started, current_tick, clients, event_timeline, news_feed, securities_descriptions, quotes, securities_sequences, completed_transactions, pending_transactions
+    global game_started, current_tick, clients, event_timeline, news_feed, securities_descriptions, quotes, securities_sequences, completed_transactions, pending_transactions, lastEvent
 
     if not game_started:
         return ("Game has not started", 403)
@@ -199,21 +234,25 @@ def tick():
                             
 
     current_tick += 1
+    
+    severity = 0
+    if random.random() < 0.2 and len(event_timeline) > 0:  # 1/5 chance
+        random_event_index = random.randint(0, len(event_timeline)-1)
+        event_desc, sev, affected = event_timeline.pop(random_event_index)
+        if security.name in affected:
+            severity = sev
+            lastEvent = event_desc
 
     for security in securities_descriptions:
         for security_seq_obj in securities_sequences:
             if security_seq_obj.name == security.name:
-                severity = 0
-                for event in event_timeline:
-                    if event.tick_start == current_tick and event.security_affected == security.name:
-                        severity = event.event_severity
                 
-                security.price = security_seq_obj.generateNextPrice(severity)
+                if security.name in affected:
+                    security.price = security_seq_obj.generateNextPrice(severity)
 
     for event in event_timeline:
         if event.tick_start == current_tick:
             news_feed.append(event.event_description)
-
 
     return f"{current_tick}"
 

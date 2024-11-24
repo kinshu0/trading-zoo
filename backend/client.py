@@ -206,18 +206,28 @@ class TradingClient:
         orders = []
         for order_line in trader_response.strip().split('\n'):
             if order_line and not order_line.upper() == 'TERMINATE':
-                item, details = order_line.split(": ")
-                action, price, quantity = details.split("|")
-                
-                orders.append(Order(
-                    #id=f"{self.team_name}-{uuid.uuid4()}",
-                    id=f"{self.team_name}",
-                    security=item,
-                    price=float(price),
-                    quantity=int(quantity),
-                    isBuy=(action.upper() == "BUY"),
-                    timestamp=current_tick
-                ))
+                try:
+                    item, details = order_line.split(": ")
+                    action, price, quantity = details.split("|")
+                    
+                    orders.append(Order(
+                        #id=f"{self.team_name}-{uuid.uuid4()}",
+                        id=f"{self.team_name}",
+                        security=item,
+                        price=float(price),
+                        quantity=int(quantity),
+                        isBuy=(action.upper() == "BUY"),
+                        timestamp=current_tick
+                    ))
+                except:
+                    orders.append(Order(
+                        id="NONE",
+                        security="NONE",
+                        price=0,
+                        quantity=0,
+                        isBuy=True,
+                        timestamp=0
+                    ))
         
         return orders
 
@@ -241,6 +251,3 @@ def test():
     orders = tc.get_quote(market_info, current_tick=1, portfolio=[], balance=100)
     for order in orders:
         print(order)
-
-
-test()

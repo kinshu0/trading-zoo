@@ -55,7 +55,7 @@ def start():
     clients = [
             TradingClient(team_name = "penguins", starting_balance = 100),
             TradingClient(team_name = "foxes", starting_balance = 100),
-            TradingClient(team_name = "mammoths", starting_balance = 100),
+            TradingClient(team_name = "monkeys", starting_balance = 100),
             ]
 
     event_timeline = create_event_timeline()
@@ -132,7 +132,7 @@ def tick():
 
     for client in clients:
         order = client.get_quote(market_info = current_market_info, current_tick=current_tick, balance=client.balance_available, portfolio=client.portfolio)
-        quotes.addOrder(order)
+        quotes.addOrder([o for o in order if o.id != "NONE"])
 
     resolved = quotes.fullfillOrders(tick = current_tick)
 

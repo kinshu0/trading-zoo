@@ -92,9 +92,17 @@ def get_valuation(name):
         if client.team_name == name:
             return f"{client.get_portfolio_valuation()}"
 
+@app.route("/completed_transactions")
+def get_completed_transcations():
+    return completed_transactions
+
+@app.route("/pending_transactions")
+def get_pending_transactions():
+    return pending_transactions
+
 @app.route("/tick")
 def tick():
-    global game_started, current_tick, clients, event_timeline, news_feed, securities_descriptions, quotes, securities_sequences
+    global game_started, current_tick, clients, event_timeline, news_feed, securities_descriptions, quotes, securities_sequences, completed_transactions, pending_transactions
 
     if not game_started:
         return ("Game has not started", 403)
@@ -108,19 +116,19 @@ def tick():
 
     quotes.update_market_maker_orders(security_prices = security_name_and_price, timestamp=current_tick)
 
-    print('-' * 200, 'START')
+    #print('-' * 200, 'START')
 
     for security in securities_descriptions:
 
         current_market_info[security.name] = MarketInfo(story = security.story,
                                                    orderbook = quotes.orderBooks[security.name].__str__())
 
-        print(security.name, quotes.orderBooks[security.name].__str__())
+        #print(security.name, quotes.orderBooks[security.name].__str__())
 
-    for cc in clients:
-        print(cc.team_name, cc.portfolio, cc.balance_available)
+    #for cc in clients:
+        #print(cc.team_name, cc.portfolio, cc.balance_available)
 
-    print('-' * 200)
+    #print('-' * 200)
 
 
     for client in clients:
@@ -128,11 +136,20 @@ def tick():
         quotes.addOrder(order)
 
     resolved = quotes.fullfillOrders(tick = current_tick)
-    for security in securities_descriptions:
-        print(security.name, quotes.orderBooks[security.name].__str__())
-    print(resolved)
 
-    print('-' * 200, 'END')
+    for r in resolved.values():
+        completed_transactions += r
+    pending_transactions = quotes
+
+
+    print('COMPLETED TRANSACTIONS:', completed_transactions)
+    print('PENDING TRANSACTIONS', pending_transactions)
+
+    #for security in securities_descriptions:
+        #print(security.name, quotes.orderBooks[security.name].__str__())
+    #print(resolved)
+
+    #print('-' * 200, 'END')
 
     for resolved_security in resolved:
         for record in resolved[resolved_security]:
